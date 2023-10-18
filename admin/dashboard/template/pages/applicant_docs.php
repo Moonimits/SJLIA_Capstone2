@@ -49,20 +49,44 @@ $result = mysqli_query($conn, $sql);
                   
                 <div class="top d-flex justify-content-between align-items-center">
                   <div class="btn-group mb-3" style="width: 4cm;">
-                  <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sort List
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Separated link</a></li>
-                  </ul>
+                  <form class="mb-2 d-flex" method="post">
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-warning btn-4cm dropdown-toggle me-2"
+                            data-toggle="dropdown" aria-expanded="false">
+                            Sort List
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
+                            <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
+                            <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                            <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
+                        </ul>
+                        <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                            aria-label="Search" style="width:10cm;">
+                        <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
+                      </div>
+                  </form>
                   </div>
                 </div>
                     <div class="row">
                       <?php
+                      if(isset($_POST['search'])){
+                        $lastname = $_POST['itemsearch'];
+                        if(!empty($lastname)){
+                            $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                        }else{
+                            $sql = "SELECT * FROM applicantdb";
+                        }
+                      }elseif(isset($_POST['newapp'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                      }elseif(isset($_POST['tempagent'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                      }elseif(isset($_POST['licagent'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                      }else{
+                          $sql = "SELECT * FROM applicantdb";
+                      }
+                      $result = mysqli_query($conn, $sql);
                       if(!mysqli_num_rows($result)>0){
                         echo '<div class="col-lg-12 text-center bg-light shadow rounded p-3">
                                 <h1>There are no records found</h1>

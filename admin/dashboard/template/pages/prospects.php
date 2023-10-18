@@ -59,10 +59,11 @@ $result = mysqli_query($conn, $sql);
                     <li><a class="dropdown-item" href="#">Separated link</a></li>
                   </ul>
                   </div>
-                 <form class="d-flex justify-content-right" role="search">
-                  <input class="form-control" type="search" placeholder="Search" aria-label="Search" style="width:10cm;">
-                  <button class="btn btn-outline-success ml-2" type="submit">Search</button>
-              </form>
+                  <form class="d-flex" method="post">
+                      <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                          aria-label="Search" style="width:10cm;">
+                      <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
+                  </form>
                 </div>
 
                   <div class="row">
@@ -78,6 +79,23 @@ $result = mysqli_query($conn, $sql);
                           </thead>
                           <tbody>
                             <?php
+                            if(isset($_POST['search'])){
+                              $lastname = $_POST['itemsearch'];
+                              if(!empty($lastname)){
+                                  $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname' && has_pruaccount = 0";
+                              }else{
+                                  $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                              }
+                            }elseif(isset($_POST['newapp'])){
+                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                            }elseif(isset($_POST['tempagent'])){
+                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                            }elseif(isset($_POST['licagent'])){
+                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                            }else{
+                                $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                            }
+                            $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){
                                 echo '<td colspan="11"><center>No Prospects record found</center></td>';
                             }else{

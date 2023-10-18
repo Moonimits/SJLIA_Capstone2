@@ -125,11 +125,6 @@ if(isset($_POST['confirm_elicense'])){
     $result = mysqli_query($conn, $sql);
 }
 
-$sql = "SELECT * FROM applicantdb";
-$result = mysqli_query($conn, $sql);
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -287,22 +282,59 @@ $result = mysqli_query($conn, $sql);
                             <div class="card">
                                 <div class="card-body">
                                     <p class="card-title">Applicant </p>
+                                    <form class="mb-2" method="post">
+                                        <button type="button" class="btn btn-success btn-4cm dropdown-toggle me-2"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Sort List
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
+                                            <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
+                                            <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                                            <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
+                                        </ul>
+                                    </form>
                                     <div class="row">
                                         <div class="container-sm">
                                             
                                             <div class="card border border-success border-3 rounded-4 mb-4">
                                                 <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                                                     <div style="font-size: 25px;">Applicant Status</div>
-                                                    <form class="d-flex" role="search">
-                                                        <input class="form-control" type="search" placeholder="Search"
+                                                    <form class="d-flex" method="post">
+                                                        <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
                                                             aria-label="Search" style="width:10cm;">
-                                                        <button class="btn btn-outline-success ml-2" type="submit">Search</button>
+                                                        <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                                                     </form>
                                                 </div>
                                                 <div class="card-body py-0" style="height: 10%;">
 
                                                     <?php
-                                                        if (mysqli_num_rows($result) > 0) {
+                                                    if(isset($_POST['search'])){
+                                                        $lastname = $_POST['itemsearch'];
+                                                        if(!empty($lastname)){
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                                                        }else{
+                                                            $sql = "SELECT * FROM applicantdb";
+                                                        }
+                                                    }elseif(isset($_POST['newapp'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                                                    }elseif(isset($_POST['tempagent'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                    }elseif(isset($_POST['licagent'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                    }else{
+                                                        $sql = "SELECT * FROM applicantdb";
+                                                    }
+                                                    $result = mysqli_query($conn, $sql);
+                                                        if (!mysqli_num_rows($result) > 0) {
+                                                            ?>
+                                                            <div class="row justify-content-center border-bottom border-secondary">
+                                                                <div class="col-lg-6">
+                                                                    <h3 class="text-center">No Records Found!</h3>
+                                                                </div>
+                                                            </div>
+                                                            <?php
+                                                        }else{
                                                             while ($row = mysqli_fetch_assoc($result)) {
                                                                 $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
                                                                 $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'];
