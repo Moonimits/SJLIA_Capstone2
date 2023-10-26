@@ -161,22 +161,12 @@ include('../../../dbcon.php');
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                            <img src="images/22.jpg" alt="profile" />
+                        <i class="icon-ellipsis"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="../logout.php">
+                            <a class="dropdown-item" href="logout.php">
                                 <i class="ti-power-off text-primary"></i>
                                 Logout
-                            </a>
-                        </div>
-                    </li>
-                    <li class="nav-item nav-settings d-none d-lg-flex nav-profile dropdown">
-                        <a class="nav-link" href="#" data-toggle="dropdown" id="profileDropdown">
-                            <i class="icon-ellipsis"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="">
-                                Change Password
                             </a>
                         </div>
                     </li>
@@ -201,12 +191,6 @@ include('../../../dbcon.php');
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="superpage/agents.php">
-                            <i class="fa-solid fa-user-tie fa-lg menu-icon"></i>
-                            <span class="menu-title">&nbsp;&nbsp;Agent List</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                             <i class="fa-solid fa-user-tie fa-lg menu-icon"></i>
                             <span class="menu-title">Applicant List</span>
@@ -214,6 +198,7 @@ include('../../../dbcon.php');
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
+                            <li class="nav-item"> <a class="nav-link" href="superpage/applicant_list.php">Applicant List</a></li>
                             <li class="nav-item"> <a class="nav-link" href="superpage/applicant.php">Roadmap</a></li>
                             </ul>
                         </div>
@@ -242,7 +227,7 @@ include('../../../dbcon.php');
                         <div class="col-md-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <p class="card-title">Advanced Table</p>
+                                    <p class="card-title">Super Admin</p>
                                     <div class="row">
                                         <div class="container-sm">
                                             <div class="card border border-success border-3 rounded-4 mb-4">

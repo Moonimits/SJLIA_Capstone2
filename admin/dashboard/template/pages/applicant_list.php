@@ -1,5 +1,29 @@
 <?php
 include('../../../../dbcon.php');
+$success = '';
+if(isset($_POST['submit'])){
+  $edit_id = filter_input(INPUT_POST, "edit_id", FILTER_SANITIZE_SPECIAL_CHARS);
+  $uniteam = filter_input(INPUT_POST, "uniteam", FILTER_SANITIZE_SPECIAL_CHARS);
+  $date_exam = filter_input(INPUT_POST, "date_exam", FILTER_SANITIZE_SPECIAL_CHARS);
+  $type_exam = filter_input(INPUT_POST, "type_exam", FILTER_SANITIZE_SPECIAL_CHARS);
+  $on_off = filter_input(INPUT_POST, "on_off", FILTER_SANITIZE_SPECIAL_CHARS);
+  $date_payment = filter_input(INPUT_POST, "date_payment", FILTER_SANITIZE_SPECIAL_CHARS);
+  $official_recp = filter_input(INPUT_POST, "official_recp", FILTER_SANITIZE_SPECIAL_CHARS);
+  $exam_result = filter_input(INPUT_POST, "exam_result", FILTER_SANITIZE_SPECIAL_CHARS);
+
+  $sql = "UPDATE applicantdb SET unit_team = ?, date_exam = ?, type_exam = ?, on_off = ?, date_payment = ?, official_reciept = ?, exam_result = ? WHERE application_id = ? ";
+  $stmt = mysqli_prepare($conn, $sql);
+  mysqli_stmt_bind_param($stmt, 'sssisssi',$uniteam,$date_exam,$type_exam,$on_off,$date_payment,$official_recp,$exam_result,$edit_id);
+  $result = mysqli_stmt_execute($stmt);
+
+  if($result){
+    $success = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      Applicant Information Updated!
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,17 +66,22 @@ include('../../../../dbcon.php');
                 <p class="card-title">Applicant List</p>
                 <div class="top d-flex justify-content-between align-items-center">
                   <div class="btn-group mb-3" style="width: 4cm;">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      Sort List
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
+                    <form method="post">
+                        <button type="button" class="btn btn-success btn-4cm dropdown-toggle me-2"
+                            data-toggle="dropdown" aria-expanded="false">
+                            Sort List
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
+                            <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
+                            <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                            <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
+                        </ul>
+                    </form>
                   </div>
+                    <?php
+                    echo $success;
+                    ?>
                 </div>
                 <div class="card border border-success border-3 rounded-4 mb-4">
                   <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
@@ -67,12 +96,12 @@ include('../../../../dbcon.php');
 
                   <?php
                       if(isset($_POST['search'])){
-                          $lastname = $_POST['itemsearch'];
-                          if(!empty($lastname)){
-                              $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
-                          }else{
-                              $sql = "SELECT * FROM applicantdb";
-                          }
+                        $searchitem = $_POST['itemsearch'];
+                        if(!empty($searchitem)){
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
+                        }else{
+                            $sql = "SELECT * FROM applicantdb";
+                        }
                       }elseif(isset($_POST['newapp'])){
                           $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
                       }elseif(isset($_POST['tempagent'])){
@@ -102,44 +131,139 @@ include('../../../../dbcon.php');
                                   $step5 = '';
                                   $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
 
+                                  if($row['on_off']==0){
+                                    $on_or_off = '<span class="badge badge-pill badge-info ml-2">Offsite</span>';
+                                  }else{
+                                    $on_or_off = '<span class="badge badge-pill badge-success ml-2">Online</span>';
+                                  } 
+                                  
+                                  if($row['has_pruaccount']==0){
+                                    $joinpru = 'Undone';
+                                    $joinclass = 'text-danger font-weight-bold';
+                                  }else{
+                                    $joinpru = 'Done';
+                                    $joinclass = 'text-success font-weight-bold';
+                                  } 
+
                           ?>
                               <div class="row justify-content-center border-bottom border-secondary py-2">
-                                  <div class="col-lg-3 border-right">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Name: </b><?php echo $fullname ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Application ID: </b><?php echo '2345' ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Join Pru Account: </b><?php echo 'Done' ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Documents: </b><?php echo 'Complete' ?></p>
+                                  <div class="col-lg-2 p-0">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Name: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Application ID: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Join Pru Account: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Documents: </b></p>
                                   </div>
-                                  <div class="col-lg-3 border-right">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Unit Team: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Recruiter: </b><?php echo $row['recruiter_name'] ?></p>
+                                  <div class="col-lg-2 p-0">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $fullname ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['plukapplication_id'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0 <?=$joinclass?>"><?php echo $joinpru ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo 'Complete' ?></p>
                                   </div>
-                                  <div class="col-lg-6">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Date of Exam: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Type of Exam: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Date of Payment: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Official Receipt: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Exam Result: </b></p>
+                                  <div class="col-lg-1">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Unit Team: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Recruiter: </b></p>
+                                  </div>
+                                  <div class="col-lg-2 ">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['unit_team'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['recruiter_name'] ?></p>
+                                  </div>
+                                  <div class="col-lg-2">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Type of Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Payment: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Official Receipt: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Exam Result: </b></p>
+                                  </div>
+                                  <div class="col-lg-3">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_exam'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0">
+                                    
+                                    <?php
+                                    if(!empty($row['type_exam'])){
+                                      echo $row['type_exam'];
+                                      echo $on_or_off;
+                                    }
+                                    ?>
+                                    
+                                    </p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_payment'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['official_reciept'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['exam_result'] ?></p>
+                                  </div>
+                                  <div class="row justify-content-end">
+                                    <div class="col-lg-1">
+                                      <button class="btn btn-success" data-toggle="modal" data-target="#modal<?=$row['application_id']?>">Edit</button>
+                                    </div>
                                   </div>
                               </div>
                               <!-- Modal -->
 
-                              <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                  <div class="modal-dialog modal-xl">
-                                      <div class="modal-content">
-                                          <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Other Information</h5>
-                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                          </div>
-                                          <div class="modal-body">
-                                              
-                                          </div>
-                                          <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
+                              <form method="post">
+                                <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Other Information</h5>
+                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                  <div class="col-lg-6">
+                                                    <input type="text" name="edit_id" class="d-none" value="<?=$row['application_id']?>">
+                                                    <div class="form-group">
+                                                      <label for="uniteam">Unit Team:</label>
+                                                      <select name="uniteam" class="form-control" id="uniteam">
+                                                        <option value="<?=$row['unit_team']?>" selected>Select an Option</option>
+                                                        <option value="Direct Team">Direct Team</option>
+                                                        <option value="Ubuntu Jade">Ubuntu Jade</option>
+                                                        <option value="Harmon Jade">Harmon Jade</option>
+                                                        <option value="Sentry Jade">Sentry Jade</option>
+                                                      </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label for="date_exam">Date of Exam:</label>
+                                                      <input type="date" name="date_exam" class="form-control" id="date_exam" placeholder="Enter date of exam" value="<?=$row['date_exam']?>">
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label for="type_exam">Type of Exam:</label>
+                                                      <div class="d-flex">
+                                                        <input type="text" name="type_exam" class="form-control" id="type_exam" placeholder="Enter type of exam" value="<?=$row['type_exam']?>">
+                                                        <select name="on_off" class="form-control" id="on_off">
+                                                          <option value="<?=$row['on_off']?>" selected>Online / Offsite</option>
+                                                          <option value="1">Online</option>
+                                                          <option value="0">Offsite</option>
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                      <label for="date_payment">Date of Payment:</label>
+                                                      <input type="date" name="date_payment" class="form-control" id="date_payment" placeholder="Enter date of payment" value="<?=$row['date_payment']?>">
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label for="official_recp">Official Receipt:</label>
+                                                      <input type="text" name="official_recp" class="form-control" id="official_recp" placeholder="Enter Official Receipt" value="<?=$row['official_reciept']?>">
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label for="exam_result">Exam Result:</label>
+                                                      <select name="exam_result" class="form-control" id="exam_result" value="<?=$row['exam_result']?>">
+                                                        <option value="<?=$row['exam_result']?>" selected>Select an Option</option>
+                                                        <option value="PASSED">PASSED</option>
+                                                        <option value="FAILED">FAILED</option>
+                                                      </select>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" name="submit" class="btn btn-success">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              </form>
                           <?php
                           }
                       }
@@ -151,20 +275,7 @@ include('../../../../dbcon.php');
           </div>
         </div>
         <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-              Copyright © 2021. Premium
-              <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a>
-              from BootstrapDash. All rights reserved.
-            </span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-              Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i>
-            </span>
-          </div>
-        </footer>
-        <!-- partial -->
+       
       </div>
       <!-- main-panel ends -->
     </div>

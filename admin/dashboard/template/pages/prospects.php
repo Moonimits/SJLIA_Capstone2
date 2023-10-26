@@ -48,16 +48,6 @@ $result = mysqli_query($conn, $sql);
                   
 <div class="top d-flex justify-content-between align-items-center">
                   <div class="btn-group mb-3" style="width: 4cm;">
-                  <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sort List
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Separated link</a></li>
-                  </ul>
                   </div>
                   <form class="d-flex" method="post">
                       <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
@@ -66,25 +56,25 @@ $result = mysqli_query($conn, $sql);
                   </form>
                 </div>
 
-                  <div class="row">
-                    <div class="col-12">
+                  <div class="row mt-2">
+                    <div class="col-12 border border-dark border-2 rounded-2 mb-4">
                       <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-center" style="width:100%">
+                        <table class="table table-striped table-hover text-center" style="width:100%">
                           <thead>
                             <tr>
-                              <th>Number</th>
-                              <th>Fullname</th>
-                              <th>Email</th>
+                              <th style="font-size: 16px">#</th>
+                              <th style="font-size: 16px">Fullname</th>
+                              <th style="font-size: 16px">Email</th>
                             </tr>
                           </thead>
                           <tbody>
                             <?php
                             if(isset($_POST['search'])){
-                              $lastname = $_POST['itemsearch'];
-                              if(!empty($lastname)){
-                                  $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname' && has_pruaccount = 0";
+                              $searchitem = $_POST['itemsearch'];
+                              if(!empty($searchitem)){
+                                  $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                               }else{
-                                  $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                                  $sql = "SELECT * FROM applicantdb";
                               }
                             }elseif(isset($_POST['newapp'])){
                                 $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
@@ -124,13 +114,7 @@ $result = mysqli_query($conn, $sql);
             </div>
         </div>
         <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
+    
         <!-- partial -->
       </div>
       <!-- main-panel ends -->

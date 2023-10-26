@@ -4,6 +4,8 @@ include('../../../../dbcon.php');
 $sql = 'SELECT * FROM applicantdb';
 $result = mysqli_query($conn, $sql);
 
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,41 +50,25 @@ $result = mysqli_query($conn, $sql);
                   <p class="card-title">Applicant Documents</p>
                   
                 <div class="top d-flex justify-content-between align-items-center">
-                  <div class="btn-group mb-3" style="width: 4cm;">
+                  <p></p>
                   <form class="mb-2 d-flex" method="post">
                     <div class="d-flex">
-                        <button type="button" class="btn btn-warning btn-4cm dropdown-toggle me-2"
-                            data-toggle="dropdown" aria-expanded="false">
-                            Sort List
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
-                            <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
-                            <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
-                            <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
-                        </ul>
                         <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
                             aria-label="Search" style="width:10cm;">
                         <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
-                      </div>
+                    </div>
                   </form>
-                  </div>
+
                 </div>
                     <div class="row">
                       <?php
                       if(isset($_POST['search'])){
-                        $lastname = $_POST['itemsearch'];
-                        if(!empty($lastname)){
-                            $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                        $searchitem = $_POST['itemsearch'];
+                        if(!empty($searchitem)){
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                         }else{
                             $sql = "SELECT * FROM applicantdb";
                         }
-                      }elseif(isset($_POST['newapp'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
-                      }elseif(isset($_POST['tempagent'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
-                      }elseif(isset($_POST['licagent'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
                       }else{
                           $sql = "SELECT * FROM applicantdb";
                       }
@@ -129,10 +115,11 @@ $result = mysqli_query($conn, $sql);
                                           if(!empty($docrow['sss'])||!empty($docrow['tin'])||!empty($docrow['gov_id'])||!empty($docrow['1x1'])){
                                             if(!empty($docrow['sss'])){
                                               ?>
-                                              <div class="col-lg-3">
+                                              <div class="col-lg-4">
                                                 <img style="height: 230px; width: 100%;" src="../../../../applicant/applicant_page/documents/<?=$userFolder?><?=$docrow['sss']?>" alt="" class="img-fluid">
                                                 <label for="sss_proof" class="form-label">Proof of SSS:</label>
                                                 <div>
+                                                  <a href="viewdocument.php?folder=<?=$userFolder?>&docu=<?=$docrow['sss']?>" target="_blank" class="btn btn-primary btn-sm me-1"><i class="fa-solid fa-eye"></i></a>
                                                   <a href="reject.php?id=1&&app_id=<?=$row['application_id']?>" class="btn btn-danger btn-sm me-1"><i class="fa-solid fa-square-xmark"></i></a>
                                                   <?php
                                                   if($docrow['confirm_sss']==1){
@@ -151,10 +138,11 @@ $result = mysqli_query($conn, $sql);
                                             }
                                             if(!empty($docrow['tin'])){
                                               ?>
-                                              <div class="col-lg-3">
+                                              <div class="col-lg-4">
                                                 <img style="height: 230px; width: 100%;" src="../../../../applicant/applicant_page/documents/<?=$userFolder?><?=$docrow['tin']?>" alt="" class="img-fluid">
                                                 <label for="tin_proof" class="form-label">Proof of TIN:</label>
                                                 <div>
+                                                  <a href="viewdocument.php?folder=<?=$userFolder?>&docu=<?=$docrow['tin']?>" target="_blank" class="btn btn-primary btn-sm me-1"><i class="fa-solid fa-eye"></i></a>
                                                   <a href="reject.php?id=2&&app_id=<?=$row['application_id']?>" class="btn btn-danger btn-sm me-1"><i class="fa-solid fa-square-xmark"></i></a>
                                                   <?php
                                                   if($docrow['confirm_tin']){
@@ -173,10 +161,11 @@ $result = mysqli_query($conn, $sql);
                                             }
                                             if(!empty($docrow['gov_id'])){
                                               ?>
-                                              <div class="col-lg-3">
+                                              <div class="col-lg-4">
                                                 <img style="height: 230px; width: 100%;" src="../../../../applicant/applicant_page/documents/<?=$userFolder?><?=$docrow['gov_id']?>" alt="" class="img-fluid">
                                                 <label for="gov_proof" class="form-label">Government ID:</label>
                                                 <div>
+                                                  <a href="viewdocument.php?folder=<?=$userFolder?>&docu=<?=$docrow['gov_id']?>" target="_blank" class="btn btn-primary btn-sm me-1"><i class="fa-solid fa-eye"></i></a>
                                                   <a href="reject.php?id=3&&app_id=<?=$row['application_id']?>" class="btn btn-danger btn-sm me-1"><i class="fa-solid fa-square-xmark"></i></a>
                                                   <?php
                                                   if($docrow['confirm_gov']){
@@ -195,10 +184,11 @@ $result = mysqli_query($conn, $sql);
                                             }
                                             if(!empty($docrow['1x1'])){
                                               ?>
-                                              <div class="col-lg-3">
+                                              <div class="col-lg-4 mt-3">
                                                 <img style="height: 230px; width: 100%;" src="../../../../applicant/applicant_page/documents/<?=$userFolder?><?=$docrow['1x1']?>" alt="" class="img-fluid">
                                                 <label for="sss_proof" class="form-label">1x1 Picture (Red Background):</label>
                                                 <div>
+                                                  <a href="viewdocument.php?folder=<?=$userFolder?>&docu=<?=$docrow['1x1']?>" target="_blank" class="btn btn-primary btn-sm me-1"><i class="fa-solid fa-eye"></i></a>
                                                   <a href="reject.php?id=4&&app_id=<?=$row['application_id']?>" class="btn btn-danger btn-sm me-1"><i class="fa-solid fa-square-xmark"></i></a>
                                                   <?php
                                                   if($docrow['confirm_1x1']){
@@ -208,6 +198,29 @@ $result = mysqli_query($conn, $sql);
                                                   }else{
                                                     ?>
                                                     <a href="confirm.php?id=4&&app_id=<?=$row['application_id']?>" class="btn btn-success btn-sm"><i class="fa-solid fa-square-check"></i></a>
+                                                    <?php
+                                                  }
+                                                  ?>
+                                                </div>
+                                              </div>
+                                              <?php
+                                            }
+                                            if(!empty($docrow['rop_cert'])){
+                                              ?>
+                                              <div class="col-lg-4 mt-3">
+                                                <img style="height: 230px; width: 100%;" src="../../../../applicant/applicant_page/documents/<?=$userFolder?><?=$docrow['rop_cert']?>" alt="" class="img-fluid">
+                                                <label for="sss_proof" class="form-label">ROP Training Certificate:</label>
+                                                <div>
+                                                  <a href="viewdocument.php?folder=<?=$userFolder?>&docu=<?=$docrow['rop_cert']?>" target="_blank" class="btn btn-primary btn-sm me-1"><i class="fa-solid fa-eye"></i></a>
+                                                  <a href="reject.php?id=5&&app_id=<?=$row['application_id']?>" class="btn btn-danger btn-sm me-1"><i class="fa-solid fa-square-xmark"></i></a>
+                                                  <?php
+                                                  if($row['confirmed_rop']){
+                                                    ?>
+                                                    <a class="btn btn-primary btn-sm disabled"><i class="fa-solid fa-square-check"></i></a>
+                                                    <?php
+                                                  }else{
+                                                    ?>
+                                                    <a href="confirm.php?id=5&&app_id=<?=$row['application_id']?>" class="btn btn-success btn-sm"><i class="fa-solid fa-square-check"></i></a>
                                                     <?php
                                                   }
                                                   ?>
@@ -247,13 +260,7 @@ $result = mysqli_query($conn, $sql);
         </div>
 
         <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
+       
         <!-- partial -->
       </div>
       <!-- main-panel ends -->

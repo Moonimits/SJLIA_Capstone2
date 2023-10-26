@@ -1,27 +1,59 @@
 <?php
+session_start();
+if(!isset($_SESSION['admin_id'])){
+    header('Location: index.php');
+}
+
+
 include('../../../dbcon.php');
 include('pages/email.php');
 
 
 if(isset($_POST['emailnotif'])){
     $email = $_POST['email'];
-    $msg = 'This is just a sample email, testing...';
+    $singlemessage = filter_input(INPUT_POST, "singlemessage", FILTER_SANITIZE_SPECIAL_CHARS);
     
-    sendEmail($email,$msg);
+    sendEmail($email,$singlemessage);
 }
-if(isset($_POST['massEmail'])){
-    $massemail = 'SELECT Email FROM applicantdb';
+if(isset($_POST['mass_send'])){
+    $recipients = $_POST['recipients'];
+    $message = filter_input(INPUT_POST, "message", FILTER_SANITIZE_SPECIAL_CHARS);
+
+    if($recipients == 1){
+        $massemail = "SELECT * FROM applicantdb";
+    }elseif($recipients == 2){
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+    }elseif($recipients == 3){
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+    }else{
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+    }
+
     $massresult = mysqli_query($conn,$massemail);
     if(mysqli_num_rows($massresult)>0){
         while($massrow = mysqli_fetch_assoc($massresult)){
             $email = $massrow['Email'];
-            $msg = 'This an mass email notification';
-            
-            sendEmail($email,$msg);
+
+            sendEmail($email,$message);
         }
+    }else{
+        ?>
+        <link rel="stylesheet" href="../../../registration/popup_style.css">
+        <div class="popup popup--icon -error js_error-popup popup--visible">
+        <div class="popup__background"></div>
+        <div class="popup__content">
+            <h3 class="popup__content__title">
+            Message not Sent
+            </h3>
+            <p>There are no recipients to be sent</p>
+            <p>
+            <a href='dashboard.php'><button class="button button--error" data-for="js_error-popup">OK</button></a>
+            </p>
+        </div>
+        </div>
+        <?php
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -183,25 +215,16 @@ if(isset($_POST['massEmail'])){
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                            <img src="images/22.jpg" alt="profile" />
+                        <i class="icon-ellipsis"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="../logout.php">
+                            <a class="dropdown-item" href="logout.php">
                                 <i class="ti-power-off text-primary"></i>
                                 Logout
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item nav-settings d-none d-lg-flex nav-profile dropdown">
-                        <a class="nav-link" href="#" data-toggle="dropdown" id="profileDropdown">
-                            <i class="icon-ellipsis"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="">
-                                Change Password
-                            </a>
-                        </div>
-                    </li>
+            
                 </ul>
                 <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
                     data-toggle="offcanvas">
@@ -273,7 +296,7 @@ if(isset($_POST['massEmail'])){
                         <div class="col-md-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <p class="card-title">Advanced Table</p>
+                                    <p class="card-title">Admin</p>
                                     <div class="row">
                                         <div class="container-sm">
                                             <div class="card border border-success border-3 rounded-4 mb-4">
@@ -304,7 +327,7 @@ if(isset($_POST['massEmail'])){
                                                         <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
                                                         <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
                                                     </ul>
-                                                    <button class="btn btn-primary" type="submit" name="massEmail"><i class="fa-solid fa-envelope"></i> Notif All</button>
+                                                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#massemail"><i class="fa-solid fa-envelope"></i>Mass Email</button>
                                                 </form>
                                             </div>
                                             <div class="card border border-success border-3 rounded-4 mb-4">
@@ -320,9 +343,9 @@ if(isset($_POST['massEmail'])){
 
                                                 <?php
                                                     if(isset($_POST['search'])){
-                                                        $lastname = $_POST['itemsearch'];
-                                                        if(!empty($lastname)){
-                                                            $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                                                        $searchitem = $_POST['itemsearch'];
+                                                        if(!empty($searchitem)){
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                                                         }else{
                                                             $sql = "SELECT * FROM applicantdb";
                                                         }
@@ -350,7 +373,17 @@ if(isset($_POST['massEmail'])){
                                                             while ($row = mysqli_fetch_array($result)) {
 
                                                                 $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
-                                                                $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'];
+                                                                $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'] . ' ' . $row['zip'];
+                                                                $dateInWords = date('F d Y', strtotime($row['birthdate']));
+                                                                $efullname = $row['e_last'] . ', ' . $row['e_first'] . ' ' . $row['e_middle'][0] . '.';
+
+                                                                //get age from date
+                                                                $c = date("Y-m-d");
+                                                                $birthdate = new DateTime($row['birthdate']);
+                                                                $currentdate = new DateTime($c);
+
+                                                                $ageInterval = $birthdate->diff($currentdate);
+                                                                $age = $ageInterval->y;
 
                                                                 $step5 = '';
                                                                 $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
@@ -374,14 +407,45 @@ if(isset($_POST['massEmail'])){
                                                                 } 
 
                                                                 if($completion == 0){
-                                                                    $statusClass = 'text-danger';
+                                                                    $statusClass = 'badge badge-pill badge-danger';
                                                                     $status = 'New Applicant';
-                                                                }elseif($completion >= 1 && $completion <=3){
-                                                                    $statusClass = 'text-warning';
-                                                                    $status = 'Temporary Agent';
+                                                                }elseif($completion >= 1 && $completion <= 3){
+                                                                    $statusClass = 'badge badge-pill badge-warning';
+                                                                    if($row['confirmed_elicense'] == 1){
+                                                                        $status = 'Temporary Agent (CLR)';                                            
+                                                                    }elseif($row['confirmed_documents'] == 1){
+                                                                        $status = 'Temporary Agent (ICE)';                                            
+                                                                    }elseif($row['confirmed_rop'] == 1){
+                                                                        $status = 'Temporary Agent (ROP)';                                            
+                                                                    }
                                                                 }elseif($completion == 4){
-                                                                    $statusClass = 'text-success';
-                                                                    $status = 'Licencsed Agent';
+                                                                    $statusClass = 'badge badge-pill badge-success';
+                                                                    $status = 'Licensed Agent';
+                                                                }
+
+                                                                //when is empty
+                                                                if(!empty($row['pluk'])){
+                                                                    $class = 'text-dark mb-0';
+                                                                    $pluk = $row['pluk'];
+                                                                }else{
+                                                                    $class = 'text-danger mb-0';
+                                                                    $pluk = 'N/A';
+                                                                }
+
+                                                                if(!empty($row['company_name'])){
+                                                                    $Comclass = 'text-dark mb-0';
+                                                                    $company = $row['company_name'];
+                                                                }else{
+                                                                    $Comclass = 'text-danger mb-0';
+                                                                    $company = 'N/A';
+                                                                }
+
+                                                                if(!empty($row['position'])){
+                                                                    $posclass = 'text-dark mb-0';
+                                                                    $position = $row['position'];
+                                                                }else{
+                                                                    $posclass = 'text-danger mb-0';
+                                                                    $position = 'N/A';
                                                                 }
                                                         ?>
                                                             <div class="row justify-content-center border-bottom border-secondary">
@@ -403,11 +467,15 @@ if(isset($_POST['massEmail'])){
                                                                 </div>
                                                                 <div class="col-lg-2 mt-5">
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Status:</p>
-                                                                    <p style="font-size: 15px;" class="<?= $statusClass?>"><?= $status?> <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal<?php echo $row['application_id'] ?>"><i class="fa-solid fa-question"></i></button></p>
+                                                                    <div class="d-flex">
+                                                                        <p style="font-size: 12px;" class="<?= $statusClass?> pt-2"><?= $status?></p>
+                                                                        <p><button class="btn btn-info btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modal<?php echo $row['application_id'] ?>"><i class="fa-solid fa-question"></i></button></p>
+                                                                        
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <!-- Modal -->
 
+                                                            <!-- Modal -->
                                                             <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                 <div class="modal-dialog modal-xl">
                                                                     <div class="modal-content">
@@ -428,15 +496,15 @@ if(isset($_POST['massEmail'])){
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 0) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">2</span>
-                                                                                                    <span class="progress-label">Level 2</span>
+                                                                                                    <span class="progress-label">ROP Training</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 1) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
-                                                                                                    <span class="progress-label">Level 3</span>
+                                                                                                    <span class="progress-label">Insurance Commission Examination</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 2) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
-                                                                                                    <span class="progress-label">Level 3</span>
+                                                                                                    <span class="progress-label">Completion of Licensing Requirements</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 3) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">4</span>
@@ -447,28 +515,164 @@ if(isset($_POST['massEmail'])){
                                                                                         
                                                                                     </div>
                                                                                 </div>
+                                                                                <div class="row justify-content-center bg-light shadow rounded border border-success p-4 mb-2">
+                                                                                    <h4>Applicant Information</h4>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Fullname:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Gender:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Age:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Birth Place:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Date of Birth:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">ZIP Code:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Address:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-5">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $fullname ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['gender'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $age . ' Years' ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['birthplace'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $dateInWords ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['zip'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $address ?></p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Contact Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Email:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">PRU Email:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">SSS Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">TIN Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Civil Status:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['contact_number'] ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['Email'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="<?=$class?>"><?php echo $pluk ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['sss'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['tin'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['civil_status'] ?></p>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row mb-2">
+                                                                                    <div class="col bg-light shadow rounded border border-success p-4 me-1">
+                                                                                        <div class="row">
+                                                                                            <h4>Employment History</h4>
+                                                                                            <div class="col-lg-auto">
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Company Name: </p>
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Position: </p>
+                                                                                            </div>
+                                                                                            <div class="col-lg-3">
+                                                                                                <p style="font-size: 15px;" class="<?=$Comclass?>"><?=$company?></p>
+                                                                                                <p style="font-size: 15px;" class="<?=$posclass?>"><?=$position?></p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col bg-light shadow rounded border border-success p-4">
+                                                                                        <div class="row">
+                                                                                            <h4>Recruiter Information</h4>
+                                                                                            <div class="col-lg-auto">
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Fullname: </p>
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Agent Code: </p>
+                                                                                            </div>
+                                                                                            <div class="col-lg-3">
+                                                                                                <p style="font-size: 15px;" class="text-dark mb-0"><?=$row['recruiter_name']?></p>
+                                                                                                <p style="font-size: 15px;" class="text-dark mb-0"><?=$row['recruiter_code']?></p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row bg-light shadow rounded border border-success p-4 mb-2">
+                                                                                    <h4>Incase fo Emergency</h4>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Fullname:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Relationship:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Address:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Contact Number:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $efullname ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['applicant_rel'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_contact'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_address'] ?></p>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
-                                                                            <p style="font-size: 15px;" class="text-secondary mb-0">Name:</p>
-                                                                            <p style="font-size: 15px;" class="text-dark"><?php echo $fullname ?> </p>
-                                                                            <p style="font-size: 15px;" class="text-secondary mb-0">Email:</p>
-                                                                            <p style="font-size: 15px;" class="text-dark"><?php echo $row['Email'] ?> </p>
-                                                                            <form method="post">
-                                                                                <input type="email" class="d-none" name="email" value="<?= $row['Email']?>">
-                                                                                <button class="btn btn-primary btn-sm" type="submit" name="emailnotif"><i class="fa-solid fa-envelope"></i></button>
-                                                                            </form>
-
                                                                         </div>
                                                                         <div class="modal-footer">
+                                                                            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#singlemail<?php echo $row['application_id'] ?>"><i class="fa-solid fa-envelope"></i>Email</button>
                                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <!-- single email modal -->
+                                                            <form method="post">
+                                                                <div class="modal fade" id="singlemail<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="singlemailLabel" aria-hidden="true">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="singlemailLabel">Email Notification</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <label for="">Recipient:</label>
+                                                                                    <input type="email" class="form-control" name="email" value="<?php echo $row['Email'] ?>" readonly>
+                                                                                </div>
+                                                                                <div class="col-lg-12">
+                                                                                    <label for="exampleFormControlTextarea1" class="form-label">Message: </label>
+                                                                                    <textarea class="form-control" name="singlemessage" id="exampleFormControlTextarea1" rows="10" required></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                            <button type="submit" name="emailnotif" class="btn btn-primary">Send</button>
+                                                                        </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
                                                         <?php
                                                         }
                                                     }
                                                     ?>
                                                 </div>
+                                                
+                                                <!-- mass email modal -->
+                                                <form method="post">
+                                                    <div class="modal fade" id="massemail" tabindex="-1" aria-labelledby="massemailLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="massemailLabel">Mass Email</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12">
+                                                                        <label for="">Recipients:</label>
+                                                                        <select class="form-select" name="recipients" aria-label="Default select example" required>
+                                                                            <option value="1" selected>All</option>
+                                                                            <option value="2">New Applicant</option>
+                                                                            <option value="3">Temporary Agent</option>
+                                                                            <option value="4">Licencsed Agent</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-lg-12">
+                                                                        <label for="exampleFormControlTextarea1" class="form-label">Message: </label>
+                                                                        <textarea class="form-control" name="message" id="exampleFormControlTextarea1" rows="10" required></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" name="mass_send" class="btn btn-primary">Send</button>
+                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

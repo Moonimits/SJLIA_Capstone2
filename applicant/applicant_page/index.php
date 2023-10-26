@@ -1,6 +1,10 @@
 <?php
+session_start();
+if(!isset($_SESSION['applicant_id'])){
+  header('Location: ../../all/homepage.php');
+}
 include('../../dbcon.php');
-$app_id = 1; //to be changed by actual login credentials
+$app_id = $_SESSION['applicant_id']; //to be changed by actual login credentials
 $error = '';
 $uploaderror = '';
 $uploadsuccess = '';
@@ -70,6 +74,7 @@ if(isset($_POST['submitprofile'])){
 if(isset($_POST['submitpru'])){
   $edit_id = filter_input(INPUT_POST, "edit_id", FILTER_SANITIZE_SPECIAL_CHARS);
   $plukemail = filter_input(INPUT_POST, "plukemail", FILTER_SANITIZE_SPECIAL_CHARS);
+  $pluk_application_id = filter_input(INPUT_POST, "pluk_application_id", FILTER_SANITIZE_SPECIAL_CHARS);
   $plukpassword = filter_input(INPUT_POST, "plukpassword", FILTER_SANITIZE_SPECIAL_CHARS);
   $upd = 1;
 
@@ -85,9 +90,9 @@ if(isset($_POST['submitpru'])){
     </div>
     ';
   }else{
-    $sql = 'UPDATE applicantdb SET has_pruaccount = ?, pluk = ?, plukpass = ? WHERE application_id = ?';
+    $sql = 'UPDATE applicantdb SET has_pruaccount = ?, pluk = ?,plukapplication_id = ?, plukpass = ? WHERE application_id = ?';
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'issi' , $upd, $plukemail, $plukpassword, $edit_id);
+    mysqli_stmt_bind_param($stmt, 'isisi' , $upd, $plukemail, $pluk_application_id, $plukpassword, $edit_id);
     $result = mysqli_stmt_execute($stmt);
   
     if($result){
@@ -449,6 +454,85 @@ if(isset($_POST['upload1x1'])){
     </div>';
   }
 }
+if(isset($_POST['uploadCert'])){
+  $appsql = "SELECT * FROM applicantdb WHERE application_id = '$app_id'";
+  $appresult = mysqli_query($conn, $appsql);
+  $approw = mysqli_fetch_assoc($appresult);
+
+  //getfullname to create a folder
+  $fullname = $approw['Lastname'] . ', ' . $approw['Firstname'];
+  $userFolder = 'documents/' . $fullname . '/';
+
+  //create a folder if folder doesnt exist
+  if (!file_exists($userFolder)) {
+    mkdir($userFolder, 0777, true);
+  }
+
+  //get the old image 
+  $sql = "SELECT rop_cert FROM documents WHERE application_id = '$app_id'";
+  $result = mysqli_query($conn, $sql);
+  $row = mysqli_fetch_assoc($result);
+  $oldimage = $row['rop_cert'];
+
+  $fileName = $_FILES["rop_certificate"]["name"];
+  $fileSize = $_FILES["rop_certificate"]["size"];
+  $tmpName = $_FILES["rop_certificate"]["tmp_name"];
+
+  if(!empty($fileName)){
+    $imageExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+    $imageExtension = strtolower($imageExtension);
+    $validExtension = ['jpg','jpeg','png'];
+
+    if(!in_array($imageExtension, $validExtension)){
+      $uploaderror = '
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        Invalid image extension!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>';
+    }
+    elseif($fileSize > 5000000){
+      $uploaderror ='
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        Image size is too large!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>';
+    }
+    else{
+      $filelink = $userFolder . $oldimage;
+      if(!empty($oldimage) && file_exists($filelink)){
+        unlink($filelink);
+      }
+
+      $newImageName = uniqid() . '.' . $imageExtension;
+      $uploadDir = $userFolder . $newImageName;
+
+      move_uploaded_file($tmpName, $uploadDir);
+
+      $addsql = "UPDATE documents SET rop_cert = ? WHERE application_id = ?";
+      $stmt = mysqli_prepare($conn, $addsql);
+      mysqli_stmt_bind_param($stmt, "si", $newImageName, $app_id);
+
+      $result = mysqli_stmt_execute($stmt);
+      if($result){
+        $uploadsuccess = '
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          Uploaded ROP Certificate Picture!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+      }
+      else{
+        echo "Failed: " . mysqli_error($conn);
+      }
+      mysqli_stmt_close($stmt);
+    }
+  }else{
+    $uploaderror ='
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      You need to Input a Photo!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
 if(isset($_POST['add_client'])){
   $cname = filter_input(INPUT_POST, "cname", FILTER_SANITIZE_SPECIAL_CHARS);
   $cemail = filter_input(INPUT_POST, "cemail", FILTER_SANITIZE_SPECIAL_CHARS);
@@ -464,6 +548,35 @@ if(isset($_POST['add_client'])){
     </div>';
   }
 }
+if(isset($_POST['changepass'])){
+  $edit_id = filter_input(INPUT_POST, "edit_id", FILTER_SANITIZE_SPECIAL_CHARS);
+  $newpass = filter_input(INPUT_POST, "newpass", FILTER_SANITIZE_SPECIAL_CHARS);
+
+  $sql = "UPDATE applicantdb SET password = '$newpass' WHERE application_id = '$edit_id'";
+  $result = mysqli_query($conn, $sql);
+    if($result){
+      ?>
+      <link rel="stylesheet" href="../../registration/popup_style.css">
+      <div class="popup popup--icon -success js_success-popup popup--visible">
+        <div class="popup__background"></div>
+        <div class="popup__content">
+          <h3 class="popup__content__title">
+            Password Changed!
+          </h3>
+          <p>
+            <a href='index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+          </p>
+        </div>
+      </div>
+      <?php
+    }
+  
+}
+if(isset($_POST['action']) && $_POST['action'] === 'updateNotification'){
+  $sql = "UPDATE notification SET is_read = 1 WHERE application_id = '$app_id'";
+  $result = mysqli_query($conn, $sql);
+}
+
 $sql = "SELECT * FROM applicantdb WHERE application_id = '$app_id'";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
@@ -472,6 +585,24 @@ $row = mysqli_fetch_assoc($result);
 $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
 $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'];
 $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
+
+if($completion == 0){
+  $statusClass = 'badge rounded-pill bg-danger';
+  $status = 'New Applicant';
+}elseif($completion >= 1 && $completion <= 3){
+  $statusClass = 'badge rounded-pill bg-warning';
+  if($row['confirmed_elicense'] == 1){
+      $status = 'Temporary Agent (CLR)';                                            
+  }elseif($row['confirmed_documents'] == 1){
+      $status = 'Temporary Agent (ICE)';                                            
+  }elseif($row['confirmed_rop'] == 1){
+      $status = 'Temporary Agent (ROP)';                                            
+  }
+}elseif($completion == 4){
+  $statusClass = 'badge rounded-pill bg-success';
+  $status = 'Licensed Agent';
+}
+
 $dateInWords = date('F d Y', strtotime($row['birthdate']));
 
 $c = date("Y-m-d");
@@ -501,6 +632,7 @@ $userFolder = 'documents/' . $foldername . '/';
 </head>
 
 <style>
+
   .profile-container {
     background-image: url("assets/images/lol.jpg"); 
     background-size: cover; 
@@ -646,26 +778,30 @@ $userFolder = 'documents/' . $foldername . '/';
           <div class="row">
             <div id="end" class="col-md-5 border-custom">
               <div class="row">
-                <div class="col-md-3  ms-4 mt-3">
-                  <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#profile">
-                    <img src="profile_img/<?php echo $row['profile_pic'] ?>" alt="" class="img-fluid">
+                <div class="col-md-3 ms-4 mt-3 text-center">
+                  <img src="profile_img/<?php echo $row['profile_pic'] ?>" alt="" class="img-fluid">
+                  <button type="button" class="btn btn-outline-success btn-sm my-1" data-bs-toggle="modal" data-bs-target="#profile">
+                    Edit Profile
                   </button>
                 </div>
                 <div class="col-md-7">
                   <br> 
                   <p><strong><?=$fullname?></strong></p>
                   <p><?=$address?></p>
-                  <p>Application ID:<strong> <?=$row['application_id']?> </strong></p>
+                  <div class="d-flex">
+                    <p class="me-2">Applicant Status: </p>
+                    <p class="<?=$statusClass?>"><?=$status?></p>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-3">                  
+            <div class="col-md-4">                  
               <br> 
               <p><strong>Email: &nbsp; </strong><?=$row['Email']?></p>
               <p><strong>PLUK Email: &nbsp; </strong><?=$row['pluk']?></p>
               <p><strong>Contact Number: &nbsp; </strong><?=$row['contact_number']?></p>
             </div>
-            <div class="col-md-4 ">                  
+            <div class="col-md-3">                  
               <br> 
               <div class="text-end me-3">
                 <div class="dropdown">
@@ -673,9 +809,9 @@ $userFolder = 'documents/' . $foldername . '/';
                     <i class="fa-solid fa-gear fa-lg " style="color: #000000;"></i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                     <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#pruaccount">Prulife Account</button></li>
-                    <li><a class="dropdown-item" href="#">Change Password</a></li>
+                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changepassword">Change Password</button></li>
                   </ul>
                 </div>
               </div>
@@ -727,11 +863,11 @@ $userFolder = 'documents/' . $foldername . '/';
                 }
                 ?>
                 <?php
-                $notifsql = "SELECT * FROM notification WHERE application_id = '$app_id'";
+                $notifsql = "SELECT * FROM notification WHERE application_id = '$app_id' AND is_read = 0";
                 $notifresult = mysqli_query($conn, $notifsql);
                 $numrow = mysqli_num_rows($notifresult);
                 ?>
-                <li><a data-bs-toggle="tab" class="nav-link position-relative" href="#notif" style="font-weight:lighter; font-size:125%;">Notifications<?php echo $numrow != 0 ? '<span style="font-size: 10px;" class="position-absolute  badge rounded-pill bg-danger mb-3">' .$numrow. '</span>' : '';?></a></li>
+                <li><a data-bs-toggle="tab" class="nav-link position-relative" href="#notif" onclick="updateNotification()" style="font-weight:lighter; font-size:125%;">Notifications <span id="notifbadge"><?php echo $numrow != 0 ? '<span style="font-size: 10px;" class="position-absolute  badge rounded-pill bg-danger mb-3">' .$numrow. '</span>' : '';?></span></a></li>
             </ul>
             <div class="tab-content">
               <div id="about" class="tab-pane fade show active">
@@ -752,11 +888,6 @@ $userFolder = 'documents/' . $foldername . '/';
                           <li class="nav-item">
                               <a class="nav-link" href="#" onclick="showContent('page1-content');">
                               Recruiter's Information
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link" href="#" onclick="showContent('page2-content');">
-                              Other Information
                               </a>
                           </li>
                           </ul>
@@ -781,11 +912,7 @@ $userFolder = 'documents/' . $foldername . '/';
                       </div>
                       <div id="page1-content" class="page-content">
                           <p>Recruiter's Name: <?=$row['recruiter_name']?></p>
-                          <p>Recruiter's Code:</p>
-                      </div>
-                      <div id="page2-content" class="page-content">
-                          <h1>Welcome to Page 2</h1>
-                          <p>This is the content of Page 2.</p>
+                          <p>Recruiter's Code: <?=$row['recruiter_code']?></p>
                       </div>
                       </div>
                   </div>
@@ -797,12 +924,12 @@ $userFolder = 'documents/' . $foldername . '/';
                 $docrow = mysqli_fetch_assoc($docresult);
                 ?>
                   <form method="post" enctype="multipart/form-data">
-                    <div class="row p-4">
+                    <div class="row justify-content-center p-4">
                       <h4 class="mb-3">Upload Documents</h4>
                       <!-- Proof of SSS -->
-                      <div class="col-lg-3 ">
+                      <div class="col-lg-4 ">
                         <div class="text-center bg-light rounded shadow p-3">
-                            <img style="height: 230px; width: 100%;" src="<?= $userFolder?><?= $docrow['sss'] ?>" alt="" class="img-fluid">
+                            <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['sss']) ? $userFolder . $docrow['sss'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="sss_proof" class="form-label">Proof of SSS:</label>
                             <input type="file" class="form-control" name="sss_proof" id="sss_proof" value="<?php echo $docrow['sss']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="uploadSSS">Upload</button>
@@ -810,9 +937,9 @@ $userFolder = 'documents/' . $foldername . '/';
                       </div>
 
                       <!-- Proof of TIN -->
-                      <div class="col-lg-3 ">
+                      <div class="col-lg-4 ">
                         <div class="text-center bg-light rounded shadow p-3">
-                            <img style="height: 230px; width: 100%;" src="<?= $userFolder?><?= $docrow['tin'] ?>" alt="" class="img-fluid">
+                            <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['tin']) ? $userFolder . $docrow['tin'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="tin_proof" class="form-label">Proof of TIN:</label>
                             <input type="file" class="form-control" name="tin_proof" id="tin_proof" value="<?php echo $docrow['tin']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="uploadTIN">Upload</button>
@@ -820,9 +947,9 @@ $userFolder = 'documents/' . $foldername . '/';
                       </div>
 
                       <!-- Government ID -->
-                      <div class="col-lg-3 ">
+                      <div class="col-lg-4 ">
                         <div class="text-center bg-light rounded shadow p-3">
-                            <img style="height: 230px; width: 100%;" src="<?= $userFolder?><?= $docrow['gov_id'] ?>" alt="" class="img-fluid">
+                            <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['gov_id']) ? $userFolder . $docrow['gov_id'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="gov_id" class="form-label">Government ID:</label>
                             <input type="file" class="form-control" name="gov_id" id="gov_id" value="<?php echo $docrow['gov_id']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="uploadGovId">Upload</button>
@@ -830,12 +957,22 @@ $userFolder = 'documents/' . $foldername . '/';
                       </div>
 
                       <!-- 1x1 Picture with Red Background -->
-                      <div class="col-lg-3 ">
+                      <div class="col-lg-4 mt-3">
                         <div class="text-center bg-light rounded shadow p-3">
-                            <img style="height: 230px; width: 100%;" src="<?= $userFolder?><?= $docrow['1x1'] ?>" alt="" class="img-fluid">
+                            <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['1x1']) ? $userFolder . $docrow['1x1'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="1x1_picture" class="form-label">1x1 Picture (Red Background):</label>
                             <input type="file" class="form-control" name="1x1_picture" id="1x1_picture" value="<?php echo $docrow['1x1']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="upload1x1">Upload</button>
+                        </div>
+                      </div>
+
+                      <!-- Rop Certificate -->
+                      <div class="col-lg-4 mt-3">
+                        <div class="text-center bg-light rounded shadow p-3">
+                            <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['rop_cert']) ? $userFolder . $docrow['rop_cert'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
+                            <label for="rop_certificate" class="form-label">ROP Certificate:</label>
+                            <input type="file" class="form-control" name="rop_certificate" id="rop_certificate" value="<?php echo $docrow['rop_cert']?>" accept="image/*">
+                            <button type="submit" class="btn btn-primary mt-2" name="uploadCert">Upload</button>
                         </div>
                       </div>
                     </div>
@@ -968,6 +1105,10 @@ $userFolder = 'documents/' . $foldername . '/';
                       <input class="form-control" type="email" name="editplukemail" placeholder="Input pluk email" value="<?=$row['pluk']?>" disabled>
                     </div>
                     <div class="form-group">
+                      <label >Application ID:</label>
+                      <input class="form-control" type="number" name="pluk_application_id" placeholder="Input application id" value="<?=$row['plukapplication_id']?>" disabled>
+                    </div>
+                    <div class="form-group">
                       <label >Pru Account Password:</label>
                       <input class="form-control" type="password" name="editplukpassword" placeholder="Input updated pru account password" required>
                     </div>
@@ -977,6 +1118,35 @@ $userFolder = 'documents/' . $foldername . '/';
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" name="editpru" class="btn btn-success">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- change password -->
+      <form method="post">
+        <div class="modal fade" tabindex="-1" id="changepassword">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Pru Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-12">
+                    <input type="text" name="edit_id" value="<?= $row['application_id']?>" style="display: none;">
+                    <div class="form-group">
+                      <label >New Password:</label>
+                      <input class="form-control" type="password" name="newpass" placeholder="Enter new Password">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" name="changepass" class="btn btn-success">Submit</button>
               </div>
             </div>
           </div>
@@ -1046,6 +1216,10 @@ $userFolder = 'documents/' . $foldername . '/';
                       <input class="form-control" type="email" name="plukemail" placeholder="Input pluk email" required>
                     </div>
                     <div class="form-group">
+                      <label >Application ID:</label>
+                      <input class="form-control" type="number" name="pluk_application_id" placeholder="Input application id" required>
+                    </div>
+                    <div class="form-group">
                       <label >Pru Account Password:</label>
                       <input class="form-control" type="password" name="plukpassword" placeholder="Input pru account password" required>
                     </div>
@@ -1068,6 +1242,7 @@ $userFolder = 'documents/' . $foldername . '/';
   <!--JQuery-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Function to hide all page content divs
     function hideAllContent() {
@@ -1094,6 +1269,22 @@ $userFolder = 'documents/' . $foldername . '/';
     }
   </script>
   
+  <script>
+  function updateNotification() {
+      // Your PHP code within JavaScript
+      $.ajax({
+          type: 'POST',
+          url: 'index.php', // You can use the same file
+          data: {
+              action: 'updateNotification' // Define an action for your inline PHP code
+          },
+          success: function(response) {
+              $('#notifbadge').html('');
+          }
+      });
+  }
+  </script>
+
 <script>
 // Use jQuery to trigger the modal when the page is ready
     $(document).ready(function(){

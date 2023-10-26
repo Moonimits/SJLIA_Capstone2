@@ -1,7 +1,10 @@
 <?php
 session_start();
 include('../../../../dbcon.php');
+include('email.php');
 $byb_id = $_GET['byb_id'];
+$emailed = $_GET['emailed'];
+
 if(isset($_GET['title'])){
   $_SESSION['title'] = $_GET['title'];
 }
@@ -48,7 +51,6 @@ if(isset($_POST['edit']))
                 </div>';
   }
 }
-
 
 $sql = "SELECT * FROM bybattendees WHERE byb_id = '$byb_id'" ;
 $result = mysqli_query($conn, $sql);
@@ -112,22 +114,33 @@ $result = mysqli_query($conn, $sql);
                   <div class="top d-flex justify-content-between align-items-center">
                     <form class="d-flex justify-content-right" role="search">
                         <input class="form-control" type="search" placeholder="Search" aria-label="Search" style="width:10cm;">
-                        <button class="btn btn-outline-success ml-2" type="submit">Search</button>
+                        <button class="btn btn-outline-success ml-2 mr-3" type="submit">Search</button>
                     </form>
-                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#add_attendee_modal">
-                    Add
-                    </button>
+                    <div>
+                      <?php
+                      if($emailed == 0){
+                        ?>
+                        <a href="email_attendees.php?byb_id=<?=$byb_id?>" class="btn btn-primary btn-sm"><i class="fa-solid fa-envelope"></i> email</a>
+                        <?php
+                      }else{
+                        ?>
+                        <a  class="btn btn-primary btn-sm disabled"><i class="fa-solid fa-envelope"></i> Email</a>
+                        <?php
+                      }
+                      ?>
+                      <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#add_attendee_modal">Add</button>
+                    </div>
                   </div>
                   <div class="row mt-2">
-                    <div class="col-12">
+                    <div class="col-12 border border-dark border-2 rounded-2 mb-4">
                       <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-center" style="width:100%">
+                        <table class="table table-striped table-hover text-center" style="width:100%">
                           <thead>
                             <tr>
-                              <th style="width: 100px;">Number</th>
-                              <th>Name</th>
-                              <th>Email</th>
-                              <th>Actions</th>
+                              <th style="font-size: 16px">#</th>
+                              <th style="font-size: 16px">Name</th>
+                              <th style="font-size: 16px">Email</th>
+                              <th style="font-size: 16px">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -225,13 +238,7 @@ $result = mysqli_query($conn, $sql);
         <!-- modal end -->
 
         <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
+       
         <!-- partial -->
       </div>
       <!-- main-panel ends -->

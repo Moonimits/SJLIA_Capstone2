@@ -23,7 +23,7 @@ if(isset($_POST['completed'])){
     if($completion == 0){
         $rstatus = 'New Applicant';
     }elseif($completion >= 1 && $completion <= 3){
-        $rstatus = 'Temporary';                                            
+        $rstatus = 'Temporary Agent';                                            
     }elseif($completion == 4){
         $rstatus = 'Licensed Agent';
     }
@@ -310,9 +310,9 @@ if(isset($_POST['confirm_elicense'])){
 
                                                     <?php
                                                     if(isset($_POST['search'])){
-                                                        $lastname = $_POST['itemsearch'];
-                                                        if(!empty($lastname)){
-                                                            $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                                                        $searchitem = $_POST['itemsearch'];
+                                                        if(!empty($searchitem)){
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                                                         }else{
                                                             $sql = "SELECT * FROM applicantdb";
                                                         }

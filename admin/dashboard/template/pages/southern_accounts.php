@@ -66,23 +66,23 @@ $result = mysqli_query($conn, $sql);
                   </form>
                 </div>
                   <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 border border-dark border-2 rounded-2 mb-4">
                       <div class="table-responsive">
-                        <table class=" table table-bordered table-hover" style="width:100%">
+                        <table class=" table table-striped table-hover" style="width:100%">
                           <thead>
                             <tr>
-                              <th>Number</th>
-                              <th>Name</th>
-                              <th>Email</th>
-                              <th>Password</th>
+                              <th style="font-size: 16px">#</th>
+                              <th style="font-size: 16px">Name</th>
+                              <th style="font-size: 16px">Email</th>
+                              <th style="font-size: 16px">Password</th>
                             </tr>
                           </thead>
                           <tbody>
                             <?php
                             if(isset($_POST['search'])){
-                              $lastname = $_POST['itemsearch'];
-                              if(!empty($lastname)){
-                                  $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
+                              $searchitem = $_POST['itemsearch'];
+                              if(!empty($searchitem)){
+                                  $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                               }else{
                                   $sql = "SELECT * FROM applicantdb";
                               }
@@ -125,14 +125,7 @@ $result = mysqli_query($conn, $sql);
             </div>
         </div>
         <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
-        <!-- partial -->
+      
       </div>
       <!-- main-panel ends -->
     </div>

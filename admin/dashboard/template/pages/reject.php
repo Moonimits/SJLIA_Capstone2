@@ -112,5 +112,36 @@ if($id == 1){
         </div>
         <?php
     }
+}elseif($id == 4){
+  $sql = "UPDATE documents SET rop_cert = '$empty' WHERE application_id = '$appid'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "UPDATE applicantdb SET confirmed_rop = 0 WHERE application_id = '$appid'";
+  $result = mysqli_query($conn, $sql);
+
+  $message = "We regret to inform you that the uploaded ROP Certificate did not meet our approval criteria.  
+              Kindly resubmit the document for further review. If you have any questions or need assistance, 
+              please do not hesitate to contact our support team. Thank you for your understanding.";
+
+  $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$message')";
+  $result = mysqli_query($conn, $sql);
+
+  if($result){
+      ?>
+      <link rel="stylesheet" href="../../../../registration/popup_style.css">
+      <div class="popup popup--icon -success js_success-popup popup--visible">
+        <div class="popup__background"></div>
+        <div class="popup__content">
+          <h3 class="popup__content__title">
+            Document Unapproved
+          </h3>
+          <p>Notification sent to the applicant</p>
+          <p>
+            <a href='applicant_docs.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+          </p>
+        </div>
+      </div>
+      <?php
+  }
 }
 ?>

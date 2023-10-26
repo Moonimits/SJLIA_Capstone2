@@ -153,13 +153,13 @@ $crslerror = '';
 
           $sql = "INSERT INTO `applicantdb`(`Email`, `Lastname`, `Firstname`, `Middlename`, 
           `birthdate`, `birthplace`, `gender`, `civil_status`, `contact_number`, `streetname`, `barangay`, `city`, `province`,
-           `zip`, `sss`, `tin`, `password`, `recruiter_name`,`e_last`, `e_first`, `e_middle`, `applicant_rel`,
+           `zip`, `sss`, `tin`, `password`, `recruiter_name`,`recruiter_code`,`e_last`, `e_first`, `e_middle`, `applicant_rel`,
             `agent_contact`, `agent_address`, `company_name`, `position`, `if_maiden`, `gov_employ`,
-             `if_spouse`,`profile_pic`)
+             `if_spouse`,`profile_pic,applicant_status`)
           VALUES ('$email','$lastname', '$firstname','$middlename','$birthday','$birthplace','$gender',
           '$civilstatus','$contact','$lot','$barangay','$city','$province','$zip','$sss','$tin','$password','$agentname',
-          '$elast','$efirst','$emiddle','$rel','$econtact','$eaddress','$companyname','$position','$maiden',
-          '$gov_emp','$spouse','$newImageName')";
+          '$agentcode','$elast','$efirst','$emiddle','$rel','$econtact','$eaddress','$companyname','$position','$maiden',
+          '$gov_emp','$spouse','$newImageName','New Applicant')";
           $result = mysqli_query($conn, $sql);
   
           $docusql = "INSERT INTO documents (sss,tin,gov_id,1x1) VALUES ('','','','')";
@@ -213,6 +213,14 @@ $crslerror = '';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+    </style>
   </head>
 
   <body>
@@ -224,11 +232,11 @@ $crslerror = '';
               </div>
               <div class="col-md-10 headcol">
                 <h4>Pru Life U.K Southern Jade Life Insurance </h4>
-                <p>Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum Lorem ipsum lorem ipsum</p>
+                <p>"For every Life, For every Future, We are Partners and Protectors</p>
                 <p class="cinfo">
-                    <span><i class="fas fa-phone"></i> +91 987 676 5459</span>
-                    <span><i class="fas fa-envelope"></i> adarsvidyakendra@gmail.com</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Smart City, Toranto, Canada</span>
+                    <span><i class="fas fa-phone"></i> +43 7414-420</span>
+                    <span><i class="fas fa-envelope"></i> southernjaderecruitment@gmail.com</span>
+                    <span><i class="fas fa-map-marker-alt"></i> 3F AA Panganiban Bldg. National Road Pallocan West Batangas City</span>
                 </p>
                
               </div>
@@ -249,7 +257,7 @@ $crslerror = '';
               </div>
                  <div class="col-lg-4 col-md-8">
                     <div class="caution">
-                      <strong>Caution:</strong> Please follow these instructions carefully.
+                      <strong>Note:</strong> Picture must feature a formal attire on a white background.
                       <!-- Add your caution message here -->
                     </div>
                 </div>
@@ -330,7 +338,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="sss" placeholder="Enter SSS Number" class="form-control form-control-sm">
+                <input type="number" name="sss" placeholder="Enter SSS Number" class="form-control form-control-sm">
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -338,7 +346,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="tin" placeholder="Enter TIN Number" class="form-control form-control-sm">
+                <input type="number" name="tin" placeholder="Enter TIN Number" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -390,7 +398,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="contact" placeholder="Enter Mobile Numbber" class="form-control form-control-sm">
+                <input type="number" name="contact" placeholder="Enter Mobile Numbber" class="form-control form-control-sm">
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -399,7 +407,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="zip" placeholder="Enter Zip Code" class="form-control form-control-sm">
+                <input type="number" name="zip" placeholder="Enter Zip Code" class="form-control form-control-sm">
               </div>
             </div>
             
@@ -459,7 +467,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="agentcode" placeholder="Enter Agent's Code" class="form-control form-control-sm">
+                <input type="number" name="agentcode" placeholder="Enter Agent's Code" class="form-control form-control-sm">
               </div>
 
              <div class="form-title row">
@@ -512,7 +520,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="econtact" placeholder="Enter Contact Numbber" class="form-control form-control-sm">
+                <input type="number" name="econtact" placeholder="Enter Contact Numbber" class="form-control form-control-sm">
               </div>
                <div class="col-lg-2 col-md-4">
                 <label for=""> Address</label>
@@ -534,15 +542,10 @@ $crslerror = '';
               </div>
               <div class="col-lg-2 col-md-8">
                 <input type="radio" name="gov" value="yes" id="govyesRadio"> Yes &nbsp;&nbsp;
-                <input type="radio" name="gov" value="no" id="govnoRadio"> No
+                <input type="radio" name="gov" value="no" id="govnoRadio" checked> No
               </div>
               <div class="col-lg-2" id="govUploadLabel">
-                <label for="formFile" class="form-label">Upload Certificate</label>
-                <span class="indc">:</span>
-              </div>
-              <div class="col-lg-4" id="govUpload">
-                <input class="form-control" name="upload" type="file" id="formFile">
-              </div>
+                
             </div>
 
             <div class="form-row row" id="govForm">
@@ -673,7 +676,6 @@ $crslerror = '';
       $("#imgInp").change(function() {
         readURL(this);
       });
-      
       
   </script>
   </body>

@@ -1,4 +1,51 @@
+<?php
+session_start();
+include("../dbcon.php");
+include("../admin/dashboard/template/pages/email.php");
+$error = '';
 
+if(isset($_POST["submit"])){
+    $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_SPECIAL_CHARS);
+    $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
+
+    $sql = "SELECT * FROM applicantdb WHERE Email = '$email'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_array($result);
+
+    if($row){
+        if($password == $row['password']){
+            $_SESSION['applicant_id'] = $row['application_id'];
+            
+            ?>
+            <link rel="stylesheet" href="../registration/popup_style.css">
+            <div class="popup popup--icon -success js_error-popup popup--visible">
+                <div class="popup__background"></div>
+                <div class="popup__content">
+                <h3 class="popup__content__title">
+                    Login Successful 
+                </h3>
+                <p>
+                    <a href="../applicant/applicant_page/index.php"><button class="button button--success" data-for="js_success-popup">close</button></a>
+                </p>
+                </div>
+            </div>
+            <?php
+        }else{
+            $error = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Wrong Password!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>';
+        }
+    }
+    else
+    {
+        $error = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                This email has not been registered!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>';
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -71,16 +118,18 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
                                 <form method="post">
                                     <div class="row justify-content-center">
                                         <div class="col-md-10 text-center">
-
+                                            <?php
+                                            echo $error;
+                                            ?>
                                             <div class="form-outline mb-4">
-                                                <input type="email" name="email" id="loginName" class="form-control"
-                                                    required />
+                                                <input type="email" name="email" id="loginName" class="form-control text-white"
+                                                value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required />
                                                 <label class="form-label text-white" for="loginName">Email</label>
                                             </div>
 
                                             <div class="form-outline mb-4">
                                                 <input type="password" name="password" id="loginPassword"
-                                                    class="form-control" required />
+                                                    class="form-control text-white" required />
                                                 <label class="form-label text-white" for="loginPassword">Password</label>
                                             </div>
 
@@ -91,7 +140,13 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
 
                                             <!-- Register buttons -->
                                             <div class="text-center text-white">
-                                                <p >Don't have an account? <a href="/all/registration.php">Register</a></p>
+                                                <?php
+                                                if(isset($_POST['email'])){
+                                                    ?>
+                                                    <a href="forgotmsg.php?email=<?=$_POST['email']?>">Forgot Password?</a>
+                                                    <?php
+                                                }
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
