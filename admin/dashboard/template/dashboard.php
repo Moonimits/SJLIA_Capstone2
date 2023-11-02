@@ -301,17 +301,50 @@ if(isset($_POST['mass_send'])){
                                         <div class="container-sm">
                                             <div class="card border border-success border-3 rounded-4 mb-4">
                                                 <div class="row justify-content-center">
-                                                    <div class="col-lg-2 p-3 text-center">
-                                                        <h5>Total Clients</h5>
-                                                        <h1>10</h1>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Applicants</h5><br>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Prospects</h5><br>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total New Applicants</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Temporary Agents</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
                                                     </div>
                                                     <div class="col-lg-2 p-3 text-center">
-                                                        <h5>Total Renewals</h5>
-                                                        <h1>10</h1>
-                                                    </div>
-                                                    <div class="col-lg-4 p-3 text-center">
-                                                        <h5>Commssions Earned</h5>
-                                                        <h1>₱60,000</h1>
+                                                        <h5>Total Licensed Agents</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
                                                     </div>
                                                 </div>
                                             </div>

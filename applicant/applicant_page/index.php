@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(!isset($_SESSION['applicant_id'])){
-  header('Location: ../../all/homepage.php');
+  header('Location: ../../all/index.php');
 }
 include('../../dbcon.php');
 $app_id = $_SESSION['applicant_id']; //to be changed by actual login credentials
@@ -894,26 +894,61 @@ $userFolder = 'documents/' . $foldername . '/';
                       </div>
                       </nav>
                       <div class="col-md-9">
-                      <div id="home-content" class="page-content">
-                          <br>
-                          <p><i class="fa-solid fa-location-dot fa-lg"></i> Address: <?=$address?></p>
-                          <p><i class="fa-solid fa-person-half-dress fa-lg"></i> Gender: <?=$row['gender']?></p>
-                          <p>Civil Status: <?=$row['civil_status']?></p>
-                          <p>Birthplace: <?=$row['birthplace']?></p>
-                          <p>Birthdate: <?=$dateInWords?></p>
-                          <p>Age: <?=$age . ' years'?></p>
-                          <p>SSS Number: <?=$row['sss']?></p>
-                          <p>TIN Number: <?=$row['tin']?></p>
-                      </div>
-                      <div id="about-content" class="page-content">
-                          <p>Email: <?=$row['Email']?></p>
-                          <p>PLUK Email: <?=$row['pluk']?></p>
-                          <p>Contact Number: <?=$row['contact_number']?></p>
-                      </div>
-                      <div id="page1-content" class="page-content">
-                          <p>Recruiter's Name: <?=$row['recruiter_name']?></p>
-                          <p>Recruiter's Code: <?=$row['recruiter_code']?></p>
-                      </div>
+                        <div id="home-content" class="page-content">
+                          <div class="row">
+                            <div class="col-lg-2">
+                              <br>
+                              <p><b> Address: </b></p>
+                              <p><b> Gender: </b></p>
+                              <p><b> Civil Status: </b></p>
+                              <p><b> Birthplace: </b></p>
+                              <p><b> Birthdate: </b></p>
+                              <p><b> Age: </b></p>
+                              <p><b> SSS Number: </b></p>
+                              <p><b> TIN Number: </b></p>
+                            </div>
+                            <div class="col-lg-10">
+                            <br>
+                              <p><?=$address?></p>
+                              <p><?=ucfirst($row['gender'])?></p>
+                              <p><?=ucfirst($row['civil_status'])?></p>
+                              <p><?=$row['birthplace']?></p>
+                              <p><?=$dateInWords?></p>
+                              <p><?=$age . ' Years old'?></p>
+                              <p><?=$row['sss']?></p>
+                              <p><?=$row['tin']?></p>
+                            </div>
+                          </div>
+                        </div>
+                        <div id="about-content" class="page-content">
+                          <div class="row">
+                            <div class="col-lg-2">
+                              <p><b> Email: </b></p>
+                              <p><b> PLUK Email: </b></p>
+                              <p><b> Contact Number: </b></p>
+                            </div>
+                            <div class="col-lg-10">
+                              <p><?=$row['Email']?></p>
+                              <p><?=$row['pluk']?></p>
+                              <p><?=$row['contact_number']?></p>
+                            </div>
+                          </div>
+                        </div>
+                        <div id="page1-content" class="page-content">
+                          <div class="row">
+                            <div class="col-lg-2">
+                              <p><b> Recruiter's Name: </b></p>
+                              <p><b> Recruiter's Code: </b></p>
+                            </div>
+                            <div class="col-lg-10">
+                              <p><?=$row['recruiter_name']?></p>
+                              <p><?=$row['recruiter_code']?></p>
+                            </div>
+                          </div>
+                        </div>
+
+                      
+                        
                       </div>
                   </div>
               </div>
@@ -1130,7 +1165,7 @@ $userFolder = 'documents/' . $foldername . '/';
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title">Pru Account</h5>
+                <h5 class="modal-title">Change Password</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">

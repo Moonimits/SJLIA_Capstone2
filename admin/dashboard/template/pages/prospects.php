@@ -1,6 +1,35 @@
 <?php
 include('../../../../dbcon.php');
 
+if(isset($_POST['mass_send'])){
+  $message = filter_input(INPUT_POST, "message", FILTER_SANITIZE_SPECIAL_CHARS);
+  $masssql = 'SELECT * FROM applicantdb WHERE has_pruaccount = 0';
+  $massresult = mysqli_query($conn,$massemail);
+  if(mysqli_num_rows($massresult)>0){
+      while($massrow = mysqli_fetch_assoc($massresult)){
+          $email = $massrow['Email'];
+
+          sendEmail($email,$message);
+      }
+  }else{
+      ?>
+      <link rel="stylesheet" href="../../../registration/popup_style.css">
+      <div class="popup popup--icon -error js_error-popup popup--visible">
+      <div class="popup__background"></div>
+      <div class="popup__content">
+          <h3 class="popup__content__title">
+          Message not Sent
+          </h3>
+          <p>There are no prospects to be sent</p>
+          <p>
+          <a href='dashboard.php'><button class="button button--error" data-for="js_error-popup">OK</button></a>
+          </p>
+      </div>
+      </div>
+      <?php
+  }
+}
+
 $sql = 'SELECT * FROM applicantdb WHERE has_pruaccount = 0';
 $result = mysqli_query($conn, $sql);
 ?>
@@ -47,7 +76,8 @@ $result = mysqli_query($conn, $sql);
                   <p class="card-title">Prospects Table</p>
                   
 <div class="top d-flex justify-content-between align-items-center">
-                  <div class="btn-group mb-3" style="width: 4cm;">
+                  <div>
+                    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#massemail"><i class="fa-solid fa-envelope"></i>Mass Email</button>
                   </div>
                   <form class="d-flex" method="post">
                       <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
@@ -76,12 +106,6 @@ $result = mysqli_query($conn, $sql);
                               }else{
                                   $sql = "SELECT * FROM applicantdb";
                               }
-                            }elseif(isset($_POST['newapp'])){
-                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
-                            }elseif(isset($_POST['tempagent'])){
-                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
-                            }elseif(isset($_POST['licagent'])){
-                                $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
                             }else{
                                 $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
                             }
@@ -105,6 +129,34 @@ $result = mysqli_query($conn, $sql);
                             ?>
                           </tbody>
                         </table>
+                        <form method="post">
+                          <div class="modal fade" id="massemail" tabindex="-1" aria-labelledby="massemailLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                  <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title" id="massemailLabel">Mass Email</h5>
+                                      <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <div class="row">
+                                          <div class="col-lg-12">
+                                              <label for="">Recipients:</label>
+                                              <input type="text" class="form-control" value="All Prospects" disabled>
+                                          </div>
+                                          <div class="col-lg-12">
+                                              <label for="exampleFormControlTextarea1" class="form-label">Message: </label>
+                                              <textarea class="form-control" name="message" id="exampleFormControlTextarea1" rows="10" required></textarea>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                      <button type="submit" name="mass_send" class="btn btn-primary">Send</button>
+                                  </div>
+                                  </div>
+                              </div>
+                          </div>
+                        </form>
                       </div>
                     </div>
                   </div>

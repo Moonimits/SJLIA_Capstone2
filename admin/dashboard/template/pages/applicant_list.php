@@ -145,6 +145,18 @@ if(isset($_POST['submit'])){
                                     $joinclass = 'text-success font-weight-bold';
                                   } 
 
+                                  $app_id = $row['application_id'];
+                                  $docsql = "SELECT * FROM documents WHERE application_id = '$app_id'";
+                                  $docresult = mysqli_query($conn, $docsql);
+                                  $docrow = mysqli_fetch_array($docresult);
+                                  if($docrow){
+                                    if($docrow['confirm_sss'] == 1 && $docrow['confirm_tin'] == 1 && $docrow['confirm_gov'] == 1 && $docrow['confirm_1x1'] == 1){
+                                      $document = '<p style="font-size: 14px;" class="mb-0 text-success">Complete</p>';
+                                    }else{
+                                      $document = '<p style="font-size: 14px;" class="mb-0 text-danger">Incomplete</p>';
+                                    }
+                                  }
+
                           ?>
                               <div class="row justify-content-center border-bottom border-secondary py-2">
                                   <div class="col-lg-2 p-0">
@@ -157,14 +169,14 @@ if(isset($_POST['submit'])){
                                     <p style="font-size: 14px;" class="mb-0"><?php echo $fullname ?></p>
                                     <p style="font-size: 14px;" class="mb-0"><?php echo $row['plukapplication_id'] ?></p>
                                     <p style="font-size: 14px;" class="mb-0 <?=$joinclass?>"><?php echo $joinpru ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo 'Complete' ?></p>
+                                    <?php echo $document?>
                                   </div>
                                   <div class="col-lg-1">
                                     <p style="font-size: 13px;" class="mb-0"><b>Unit Team: </b></p>
                                     <p style="font-size: 13px;" class="mb-0"><b>Recruiter: </b></p>
                                   </div>
                                   <div class="col-lg-2 ">
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['unit_team'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo !empty($row['unit_team']) ? $row['unit_team'] : 'N/A' ?></p>
                                     <p style="font-size: 14px;" class="mb-0"><?php echo $row['recruiter_name'] ?></p>
                                   </div>
                                   <div class="col-lg-2">
