@@ -823,6 +823,9 @@ $userFolder = 'documents/' . $foldername . '/';
         <?php
         echo $uploaderror;
         echo $uploadsuccess;
+        if(isset($_GET['msg'])){
+          echo $_GET['msg'];
+        }
         ?>
       <section class="step-wizard">
         <ul class="step-wizard-list mb-0">
@@ -1060,6 +1063,7 @@ $userFolder = 'documents/' . $foldername . '/';
                                 <th>Fullname</th>
                                 <th>Email</th>
                                 <th>Contact Number</th>
+                                <th>Action</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1077,7 +1081,8 @@ $userFolder = 'documents/' . $foldername . '/';
                                         <td><?= $count?></td>
                                         <td><?= $crow['fullname']?></td>
                                         <td><?= $crow['email']?></td>     
-                                        <td><?= $crow['contact_no']?></td>                               
+                                        <td><?= $crow['contact_no']?></td>       
+                                        <td><a href="deleteclient.php?delid=<?=$crow['client_id']?>" class="btn btn-danger btn-sm"><i class="text-light fa-solid fa-trash-can"></i></a></td>                        
                                     </tr>
                                     <?php
                                     $count += 1;
