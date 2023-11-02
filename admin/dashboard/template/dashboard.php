@@ -365,7 +365,7 @@ if(isset($_POST['mass_send'])){
                                             </div>
                                             <div class="card border border-success border-3 rounded-4 mb-4">
                                                 <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
-                                                    <div style="font-size: 25px;">Applicant List</div>
+                                                    <div style="font-size: 25px;">Applicant's Information</div>
                                                     <form class="d-flex" method="post" role="search">
                                                         <input class="form-control" type="search" name="itemsearch" placeholder="Search for Lastname"
                                                             aria-label="Search" style="width:10cm;">

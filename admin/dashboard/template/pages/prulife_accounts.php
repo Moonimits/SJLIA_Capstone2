@@ -49,18 +49,9 @@ $result = mysqli_query($conn, $sql);
 
                   <div class="top d-flex justify-content-between align-items-center">
                   <div class="btn-group mb-3" style="width: 4cm;">
-                  <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sort List
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Separated link</a></li>
-                  </ul>
+                  
                   </div>
-                  <form class="d-flex" method="post">
+                  <form class="d-flex mb-2" method="post">
                       <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
                           aria-label="Search" style="width:10cm;">
                       <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>

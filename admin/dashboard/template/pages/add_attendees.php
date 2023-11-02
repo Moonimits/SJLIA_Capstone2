@@ -2,12 +2,18 @@
 session_start();
 include('../../../../dbcon.php');
 include('email.php');
-$byb_id = $_GET['byb_id'];
-$emailed = $_GET['emailed'];
-
 if(isset($_GET['title'])){
   $_SESSION['title'] = $_GET['title'];
 }
+if(isset($_GET['byb_id'])){
+  $_SESSION['byb_id'] = $_GET['byb_id'];
+}
+if(isset($_GET['emailed'])){
+  $_SESSION['emailed'] = $_GET['emailed'];
+}
+$byb_id = $_SESSION['byb_id'];
+$emailed = $_SESSION['emailed'];
+
 $success = '';
 
 
@@ -52,7 +58,16 @@ if(isset($_POST['edit']))
   }
 }
 
-$sql = "SELECT * FROM bybattendees WHERE byb_id = '$byb_id'" ;
+if(isset($_POST['search'])){
+  $searchitem = $_POST['searchitem'];
+  if(!empty($searchitem)){
+      $sql = "SELECT * FROM bybattendees WHERE byb_id = '$byb_id' AND fullname LIKE '%$searchitem%'";
+  }else{
+      $sql = "SELECT * FROM bybattendees WHERE byb_id = '$byb_id'";
+  }
+}else{
+  $sql = "SELECT * FROM bybattendees WHERE byb_id = '$byb_id'" ;
+}
 $result = mysqli_query($conn, $sql);
 
 
@@ -112,9 +127,9 @@ $result = mysqli_query($conn, $sql);
                   }
                   ?>
                   <div class="top d-flex justify-content-between align-items-center">
-                    <form class="d-flex justify-content-right" role="search">
-                        <input class="form-control" type="search" placeholder="Search" aria-label="Search" style="width:10cm;">
-                        <button class="btn btn-outline-success ml-2 mr-3" type="submit">Search</button>
+                    <form class="d-flex justify-content-right" method="post" role="search">
+                        <input class="form-control" type="search" placeholder="Search" name="searchitem" aria-label="Search" style="width:10cm;">
+                        <button class="btn btn-outline-success ml-2 mr-3" type="submit" name="search">Search</button>
                     </form>
                     <div>
                       <?php
@@ -146,7 +161,7 @@ $result = mysqli_query($conn, $sql);
                           <tbody>
                             <?php
                             if(!mysqli_num_rows($result)>0){
-                                echo '<td colspan="11"><center>No Attendees record yet</center></td>';
+                                echo '<td colspan="11"><center>No Attendees found</center></td>';
                             }else{
                                 $count = 1;
                                 while($row = mysqli_fetch_assoc($result)){

@@ -70,11 +70,13 @@ body {
   position: relative; /* Required for the ::before pseudo-element */
   background-image: url("images/bldg.jpg");
   background-size: cover;
+  min-height: 100vh; 
 }
 
 body::before {
   content: "";
   position: absolute;
+  height: 100vh; /* Use viewport height for full coverage */
   top: 0;
   left: 0;
   right: 0;
@@ -82,6 +84,7 @@ body::before {
   background-color: rgba(0, 0, 0, 0.5); /* This sets the overlay background color with 50% opacity */
   z-index: -1; /* Place the overlay behind other content */
 }
+
     </style>
 <nav class="navbar bg-body-tertiary shadow-none">
     <div class="container-fluid d-flex justify-content-between align-items-center">
@@ -158,7 +161,7 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
         </div>
     </div>
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+
     <!-- MDB -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>
