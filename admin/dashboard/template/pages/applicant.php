@@ -373,22 +373,27 @@ if(isset($_POST['confirm_elicense'])){
                                                                         <ul class="step-wizard-list mb-0">
                                                                             <li class="step-wizard-item">
                                                                                 <span class="progress-count">1</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(0%)</span>
                                                                                 <span class="progress-label">New Applicant</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 0) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">2</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(25%)</span>
                                                                                 <span class="progress-label">ROP</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 1) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">3</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(50%)</span>
                                                                                 <span class="progress-label">ICE</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 2) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">3</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(75%)</span>
                                                                                 <span class="progress-label">CLR</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 3) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">4</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(100%)</span>
                                                                                 <span class="progress-label">Completed</span>
                                                                             </li>
                                                                         </ul>

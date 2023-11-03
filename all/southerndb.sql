@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2023 at 04:47 PM
+-- Generation Time: Nov 02, 2023 at 09:32 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -90,12 +90,9 @@ CREATE TABLE `applicantdb` (
   `official_reciept` varchar(255) NOT NULL,
   `date_payment` date NOT NULL,
   `type_exam` varchar(255) NOT NULL,
-  `on_off1` int(11) NOT NULL,
-  `on_off2` int(11) NOT NULL,
-  `date_exam1` date NOT NULL,
-  `date_exam2` date NOT NULL,
-  `exam_result1` text NOT NULL,
-  `exam_result2` varchar(255) NOT NULL,
+  `on_off` int(11) NOT NULL,
+  `date_exam` date NOT NULL,
+  `exam_result` text NOT NULL,
   `byb` text NOT NULL,
   `join_pru` varchar(255) NOT NULL,
   `pruexpert` text NOT NULL,
@@ -117,12 +114,12 @@ CREATE TABLE `applicantdb` (
 -- Dumping data for table `applicantdb`
 --
 
-INSERT INTO `applicantdb` (`Timestamp`, `Email`, `Lastname`, `Firstname`, `Middlename`, `birthdate`, `birthplace`, `gender`, `civil_status`, `contact_number`, `streetname`, `barangay`, `city`, `province`, `zip`, `sss`, `tin`, `pluk`, `plukapplication_id`, `plukpass`, `recruiter_name`, `recruiter_code`, `e_last`, `e_first`, `e_middle`, `applicant_rel`, `agent_contact`, `agent_address`, `company_name`, `position`, `start_date`, `end_date`, `if_maiden`, `gov_employ`, `if_spouse`, `status`, `unit_team`, `application_id`, `official_reciept`, `date_payment`, `type_exam`, `on_off1`, `on_off2`, `date_exam1`, `date_exam2`, `exam_result1`, `exam_result2`, `byb`, `join_pru`, `pruexpert`, `rop_training`, `documents`, `e_licensing`, `date_submitted`, `password`, `profile_pic`, `has_pruaccount`, `applicant_status`, `confirmed_rop`, `confirmed_documents`, `confirmed_elicense`, `is_completed`) VALUES
-('2023-10-08', 'allysajanecatibog@gmail.com', 'Catibog', 'Allysa Jane', 'Blanza', '2002-03-09', 'Batangas Hospital', 'female', 'single', '09561637899', 'Purok 3', 'Sinisian East', 'Lemery', 'Batangas', 4210, 7985, 46321, 'plukally@gmail.com', 986345, 'marcoluis', 'Alexxxies Gail', 45862, 'Catibog', 'Gemmalyn', 'Blanza ', 'Mother', '09519295689', 'Sinisian East, Lemery Batangas', '', '', '0000-00-00', '0000-00-00', '', 'no', '', '', 'Direct Team', 3, 'FF 036528966 ', '2023-10-17', 'Variable &#38; Traditional', 2, 1, '2023-10-11', '2023-11-04', 'PASSED', 'PASSED', '', '', '', '', '', '', '0000-00-00', 'MarcoLuis', '65229cb398254.jpg', 1, 'Licensed Agent', 1, 1, 1, 1),
-('2023-10-23', 'deslienicole@gmail.com', 'Badillo', 'Deslie', 'Castillo', '2002-12-01', 'Batangas Medical Hospital', 'female', 'single', '09865236445', 'Silangan', 'Luya', 'San Luis', 'Batangas', 4210, 54462, 2598, '', 0, '', 'Alexxiees', 45862, 'Badillo', 'Edilyn', 'Castillo', 'Mother', '09562345887', 'Luya, Sanluis, Batangas', '', '', '0000-00-00', '0000-00-00', 'N/A', 'no', 'N/A', '', '', 6, '', '0000-00-00', '', 0, 0, '0000-00-00', '0000-00-00', '', '', '', '', '', '', '', '', '0000-00-00', 'password', '6535e95616439.png', 0, 'Licensed Agent', 1, 1, 1, 1),
-('2023-10-23', 'ianbongaling@gmail.com', 'Boongaling', 'Ian', 'Castillo', '2001-10-10', 'Batangas Medical Hospital', 'male', 'single', '09865236445', 'Silangan', 'Luya', 'San Luis', 'Batangas', 4210, 56333, 79879, '', 0, '', 'Alexxiees', 45862, 'Boongaling', 'Gloria', 'Castillo', 'Mother', '09562345887', 'Luya, Sanluis, Batangas', '', '', '0000-00-00', '0000-00-00', 'N/A', 'no', 'N/A', '', '', 5, '', '0000-00-00', '', 0, 0, '0000-00-00', '0000-00-00', '', '', '', '', '', '', '', '', '0000-00-00', 'password', '6535e7e281435.jpg', 0, 'Temporary Agent', 1, 1, 0, 0),
-('2023-09-25', 'moonimits@gmail.com', 'Hernandez', 'Luis', 'Salazar', '2001-11-05', 'SA TUBUHAN', 'male', ' single', '29832792', 'Purok 3', 'Aniban II', 'Bacoor City', 'Batangas', 9273, 2837827, 2147483647, 'plukmarco@gmail.com', 0, 'allysajanemahalkoyiiee', 'Alexxxies Gail', 45862, 'Hernandez', 'Sunday', 'Salazar', 'Mother', '2147483647', 'Luya', '', '', '0000-00-00', '0000-00-00', '', '', '', '', '', 1, '', '0000-00-00', '', 0, 0, '0000-00-00', '0000-00-00', '', '', '', '', '', '', '', '', '0000-00-00', 'MarcoLuis52001', '652d59a96fdb3.jpg', 1, 'Temporary Agent', 1, 1, 1, 0),
-('2023-09-26', 'moonimitseclipse@gmail.com', 'Hernandez', 'Marco Luis', 'Salazar', '2001-11-05', 'SA TUBUHAN', 'male', 'married', '29832792', 'Purok 3', 'Balagtas', 'Batangas City (Capital)', 'Batangas', 9273, 283, 26283, 'plukallysajane@gmail.com', 0, 'password123', 'Alexxxies Gail', 45862, 'Hernandez', 'Sunday', 'Salazar', 'Mother', '2147483647', 'Luya', 'kaloka', 'ewan', '0000-00-00', '0000-00-00', '', 'yes', '', '', '', 2, '', '0000-00-00', '', 0, 0, '0000-00-00', '0000-00-00', '', '', '', '', '', '', '', '', '0000-00-00', 'Passwordasoaso', '6522244617bae.jpg', 1, 'New Applicant', 0, 0, 0, 0);
+INSERT INTO `applicantdb` (`Timestamp`, `Email`, `Lastname`, `Firstname`, `Middlename`, `birthdate`, `birthplace`, `gender`, `civil_status`, `contact_number`, `streetname`, `barangay`, `city`, `province`, `zip`, `sss`, `tin`, `pluk`, `plukapplication_id`, `plukpass`, `recruiter_name`, `recruiter_code`, `e_last`, `e_first`, `e_middle`, `applicant_rel`, `agent_contact`, `agent_address`, `company_name`, `position`, `start_date`, `end_date`, `if_maiden`, `gov_employ`, `if_spouse`, `status`, `unit_team`, `application_id`, `official_reciept`, `date_payment`, `type_exam`, `on_off`, `date_exam`, `exam_result`, `byb`, `join_pru`, `pruexpert`, `rop_training`, `documents`, `e_licensing`, `date_submitted`, `password`, `profile_pic`, `has_pruaccount`, `applicant_status`, `confirmed_rop`, `confirmed_documents`, `confirmed_elicense`, `is_completed`) VALUES
+('2023-10-08', 'allysajanecatibog@gmail.com', 'Catibog', 'Allysa Jane', 'Blanza', '2002-03-09', 'Batangas Hospital', 'female', 'single', '09561637899', 'Purok 3', 'Sinisian East', 'Lemery', 'Batangas', 4210, 7985, 46321, 'plukally@gmail.com', 986345, 'marcoluis', 'Alexxxies Gail', 45862, 'Catibog', 'Gemmalyn', 'Blanza ', 'Mother', '09519295689', 'Sinisian East, Lemery Batangas', '', '', '0000-00-00', '0000-00-00', '', 'no', '', '', 'Direct Team', 3, 'FF 036528966 ', '2023-10-17', 'Variable &#38; Traditional', 1, '2023-10-11', 'PASSED', '', '', '', '', '', '', '0000-00-00', 'MarcoLuis', '65229cb398254.jpg', 1, 'Licensed Agent', 1, 1, 1, 1),
+('2023-10-23', 'deslienicole@gmail.com', 'Badillo', 'Deslie', 'Castillo', '2002-12-01', 'Batangas Medical Hospital', 'female', 'single', '09865236445', 'Silangan', 'Luya', 'San Luis', 'Batangas', 4210, 54462, 2598, '', 0, '', 'Alexxiees', 45862, 'Badillo', 'Edilyn', 'Castillo', 'Mother', '09562345887', 'Luya, Sanluis, Batangas', '', '', '0000-00-00', '0000-00-00', 'N/A', 'no', 'N/A', '', '', 6, '', '0000-00-00', '', 0, '0000-00-00', '', '', '', '', '', '', '', '0000-00-00', 'password', '6535e95616439.png', 0, 'Licensed Agent', 1, 1, 1, 1),
+('2023-10-23', 'ianbongaling@gmail.com', 'Boongaling', 'Ian', 'Castillo', '2001-10-10', 'Batangas Medical Hospital', 'male', 'single', '09865236445', 'Silangan', 'Luya', 'San Luis', 'Batangas', 4210, 56333, 79879, '', 0, '', 'Alexxiees', 45862, 'Boongaling', 'Gloria', 'Castillo', 'Mother', '09562345887', 'Luya, Sanluis, Batangas', '', '', '0000-00-00', '0000-00-00', 'N/A', 'no', 'N/A', '', '', 5, '', '0000-00-00', '', 0, '0000-00-00', '', '', '', '', '', '', '', '0000-00-00', 'password', '6535e7e281435.jpg', 0, 'Licensed Agent', 1, 1, 1, 1),
+('2023-09-25', 'moonimits@gmail.com', 'Hernandez', 'Luis', 'Salazar', '2001-11-05', 'SA TUBUHAN', 'male', ' single', '29832792', 'Purok 3', 'Aniban II', 'Bacoor City', 'Batangas', 9273, 2837827, 2147483647, 'plukmarco@gmail.com', 0, 'allysajanemahalkoyiiee', 'Alexxxies Gail', 45862, 'Hernandez', 'Sunday', 'Salazar', 'Mother', '2147483647', 'Luya', '', '', '0000-00-00', '0000-00-00', '', '', '', '', '', 1, '', '0000-00-00', '', 0, '0000-00-00', '', '', '', '', '', '', '', '0000-00-00', 'MarcoLuis52001', '652d59a96fdb3.jpg', 1, 'Licensed Agent', 1, 1, 1, 1),
+('2023-09-26', 'moonimitseclipse@gmail.com', 'Hernandez', 'Marco Luis', 'Salazar', '2001-11-05', 'SA TUBUHAN', 'male', 'married', '29832792', 'Purok 3', 'Balagtas', 'Batangas City (Capital)', 'Batangas', 9273, 283, 26283, 'plukallysajane@gmail.com', 0, 'password123', 'Alexxxies Gail', 45862, 'Hernandez', 'Sunday', 'Salazar', 'Mother', '2147483647', 'Luya', 'kaloka', 'ewan', '0000-00-00', '0000-00-00', '', 'yes', '', '', '', 2, '', '0000-00-00', '', 0, '0000-00-00', '', '', '', '', '', '', '', '0000-00-00', 'Passwordasoaso', '6522244617bae.jpg', 1, 'Temporary Agent', 1, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -176,32 +173,6 @@ INSERT INTO `bybevents` (`byb_id`, `byb_title`, `byb_date`, `emailed`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bybpreregistration`
---
-
-CREATE TABLE `bybpreregistration` (
-  `register_id` int(11) NOT NULL,
-  `fullname` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `contact` varchar(255) NOT NULL,
-  `recruited_by` varchar(255) NOT NULL,
-  `byb_date` date NOT NULL,
-  `preregister_date` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `bybpreregistration`
---
-
-INSERT INTO `bybpreregistration` (`register_id`, `fullname`, `email`, `contact`, `recruited_by`, `byb_date`, `preregister_date`) VALUES
-(1, 'Marco Luis Hernandez', 'marcoluis.hernandez@gmail.com', '09865236445', 'Alexxiess ', '2023-11-10', '2023-11-03 09:30:00'),
-(2, 'Allysa Jane Catibog', 'allysajanecatibog@gmail.com', '09865236445', 'Alexxiess ', '2023-11-18', '2023-11-03 16:15:40'),
-(3, 'Deslie Nicole Badillo', 'deslienicole@gmail.com', '09865236445', 'Alexxiess ', '2023-11-10', '2023-11-03 20:45:59'),
-(4, 'Allysa Jane Catibog', 'allysajanecatibog@gmail.com', '09519295689', 'Alexxiess ', '2023-11-24', '2023-11-03 20:57:52');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `clients`
 --
 
@@ -248,6 +219,7 @@ INSERT INTO `documents` (`application_id`, `sss`, `tin`, `gov_id`, `1x1`, `rop_c
 (1, '652bb98817e72.jpg', '652bb9914f576.jpg', '652bba0c6c3d1.jpg', '652bc051a7ee0.png', '6534db56f355a.jpg', 0, 0, 0, 0),
 (2, '6527a6562d277.jpg', '6527adcbbeb92.jpg', '6527a99f124e8.png', '6527aa715bac0.jpg', '', 0, 0, 0, 0),
 (3, '6527ae39903dc.jpg', '', '', '', '', 1, 0, 0, 0),
+(4, '6527ea9fda7e7.jpg', '6527eab9f3927.jpg', '6527f10a46a28.png', '6527ef72490da.jpg', '', 1, 1, 0, 0),
 (5, '', '', '', '', '', 0, 0, 0, 0),
 (6, '', '', '', '65364528ca465.jpg', '', 0, 0, 0, 0);
 
@@ -270,31 +242,11 @@ CREATE TABLE `notification` (
 
 INSERT INTO `notification` (`notif_id`, `application_id`, `message`, `is_read`) VALUES
 (1, 3, 'Great news! Your uploaded SSS document have been approved successfully. Thank you for your submission!', 1),
+(2, 4, 'Great news! Your uploaded SSS document have been approved successfully. Thank you for your submission!', 0),
+(3, 4, 'Great news! Your uploaded TIN document have been approved successfully. Thank you for your submission!', 0),
 (4, 1, 'Great news! Your uploaded 1x1 Picture have been approved successfully. Thank you for your submission!', 1),
 (5, 1, 'We regret to inform you that the uploaded SSS document did not meet our approval criteria.  \r\n                Kindly resubmit the document for further review. If you have any questions or need assistance, \r\n                please do not hesitate to contact our support team. Thank you for your understanding.', 1),
 (6, 1, 'Great news! Your uploaded ROP certificate has been approved successfully. Thank you for your submission!', 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `unit_team`
---
-
-CREATE TABLE `unit_team` (
-  `team_id` int(11) NOT NULL,
-  `uniteam` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `unit_team`
---
-
-INSERT INTO `unit_team` (`team_id`, `uniteam`) VALUES
-(1, 'Direct Team'),
-(2, 'Ubuntu Jade'),
-(3, 'Harmon Jade'),
-(4, 'Sentry Jade'),
-(5, 'Chacha Team');
 
 --
 -- Indexes for dumped tables
@@ -318,8 +270,7 @@ ALTER TABLE `applicantdb`
 -- Indexes for table `bybattendees`
 --
 ALTER TABLE `bybattendees`
-  ADD PRIMARY KEY (`attendee_num`),
-  ADD KEY `byb_id` (`byb_id`);
+  ADD PRIMARY KEY (`attendee_num`);
 
 --
 -- Indexes for table `bybevents`
@@ -328,17 +279,10 @@ ALTER TABLE `bybevents`
   ADD PRIMARY KEY (`byb_id`);
 
 --
--- Indexes for table `bybpreregistration`
---
-ALTER TABLE `bybpreregistration`
-  ADD PRIMARY KEY (`register_id`);
-
---
 -- Indexes for table `clients`
 --
 ALTER TABLE `clients`
-  ADD PRIMARY KEY (`client_id`),
-  ADD KEY `application_id` (`application_id`);
+  ADD PRIMARY KEY (`client_id`);
 
 --
 -- Indexes for table `documents`
@@ -350,14 +294,7 @@ ALTER TABLE `documents`
 -- Indexes for table `notification`
 --
 ALTER TABLE `notification`
-  ADD PRIMARY KEY (`notif_id`),
-  ADD KEY `application_id` (`application_id`);
-
---
--- Indexes for table `unit_team`
---
-ALTER TABLE `unit_team`
-  ADD PRIMARY KEY (`team_id`);
+  ADD PRIMARY KEY (`notif_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -379,25 +316,19 @@ ALTER TABLE `applicantdb`
 -- AUTO_INCREMENT for table `bybattendees`
 --
 ALTER TABLE `bybattendees`
-  MODIFY `attendee_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `attendee_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `bybevents`
 --
 ALTER TABLE `bybevents`
-  MODIFY `byb_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
-
---
--- AUTO_INCREMENT for table `bybpreregistration`
---
-ALTER TABLE `bybpreregistration`
-  MODIFY `register_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `byb_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `documents`
@@ -410,40 +341,6 @@ ALTER TABLE `documents`
 --
 ALTER TABLE `notification`
   MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `unit_team`
---
-ALTER TABLE `unit_team`
-  MODIFY `team_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `bybattendees`
---
-ALTER TABLE `bybattendees`
-  ADD CONSTRAINT `bybattendees_ibfk_1` FOREIGN KEY (`byb_id`) REFERENCES `bybevents` (`byb_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `clients`
---
-ALTER TABLE `clients`
-  ADD CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `applicantdb` (`application_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `documents`
---
-ALTER TABLE `documents`
-  ADD CONSTRAINT `documents_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `applicantdb` (`application_id`);
-
---
--- Constraints for table `notification`
---
-ALTER TABLE `notification`
-  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `applicantdb` (`application_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

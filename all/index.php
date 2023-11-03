@@ -91,7 +91,7 @@ body::before {
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <img src="images/logo-topnav.png" alt="Logo" width="290" height="55" class="d-inline-block align-text-top">
         <div class="d-inline" style="margin-right:50px;">
-            <a href="#" style="color: azure; margin-right: 30px;">Login In</a>
+            <a href="#" style="color: azure; margin-right: 30px;">Log In</a>
             <a href="about.php" style="color: azure;">About Us</a>
         </div>
     </div>

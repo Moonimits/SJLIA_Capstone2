@@ -1,12 +1,8 @@
 <?php
 include('../../../../dbcon.php');
 include('email.php');
-$byb_id = $_GET['byb_id'];
 
-$sql = "UPDATE bybevents SET emailed = 1 WHERE byb_id = '$byb_id'";
-$result = mysqli_query($conn, $sql);
-
-$massemail = "SELECT email, fullname FROM bybattendees WHERE byb_id = '$byb_id'";
+$massemail = "SELECT email, fullname FROM bybpreregistration";
 $massresult = mysqli_query($conn,$massemail);
 if(mysqli_num_rows($massresult)>0){
     while($massrow = mysqli_fetch_assoc($massresult)){
@@ -31,4 +27,3 @@ if(mysqli_num_rows($massresult)>0){
     }
 }
 
-?>

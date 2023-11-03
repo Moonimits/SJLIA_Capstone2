@@ -262,7 +262,7 @@ if(isset($_POST['mass_send'])){
                     <li class="nav-item">
                         <a class="nav-link" href="pages/byb.php">
                             <i class="fa-solid fa-users-rectangle fa-lg menu-icon"></i>
-                            <span class="menu-title">BYB Attendees</span>
+                            <span class="menu-title">BYB Pre-Registered</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -525,22 +525,27 @@ if(isset($_POST['mass_send'])){
                                                                                             <ul class="step-wizard-list mb-0">
                                                                                                 <li class="step-wizard-item">
                                                                                                     <span class="progress-count">1</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(0%)</span>
                                                                                                     <span class="progress-label">New Applicant</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 0) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">2</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(25%)</span>
                                                                                                     <span class="progress-label">ROP Training</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 1) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(50%)</span>
                                                                                                     <span class="progress-label">Insurance Commission Examination</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 2) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(75%)</span>
                                                                                                     <span class="progress-label">Completion of Licensing Requirements</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 3) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">4</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(100%)</span>
                                                                                                     <span class="progress-label">Completed</span>
                                                                                                 </li>
                                                                                             </ul>
