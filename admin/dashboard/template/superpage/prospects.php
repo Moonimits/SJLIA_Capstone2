@@ -74,6 +74,7 @@ $result = mysqli_query($conn, $sql);
                               <th>Number</th>
                               <th>Fullname</th>
                               <th>Email</th>
+                              <th>Contact Number</th>
                             </tr>
                           </thead>
                           <tbody class="table-group-divider">
@@ -88,7 +89,8 @@ $result = mysqli_query($conn, $sql);
                                   <tr>
                                       <td><?= $count?></td>
                                       <td><?= $fullname?></td>
-                                      <td><?= $row['Email']?></td>                                    
+                                      <td><?= $row['Email']?></td>          
+                                      <td><?= $row['contact_number']?></td>                            
                                   </tr>
                                   <?php
                                   $count += 1;

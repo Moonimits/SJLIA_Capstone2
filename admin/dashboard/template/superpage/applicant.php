@@ -1,6 +1,15 @@
 <?php
 include('../../../../dbcon.php');
-$sql = "SELECT * FROM applicantdb";
+if(isset($_POST['search'])){
+    $searchitem = $_POST['itemsearch'];
+    if(!empty($searchitem)){
+        $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+    }else{
+        $sql = "SELECT * FROM applicantdb";
+    }
+}else{
+    $sql = "SELECT * FROM applicantdb";
+}
 $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
@@ -165,10 +174,10 @@ $result = mysqli_query($conn, $sql);
                                             <div class="card border border-success border-3 rounded-4 mb-4">
                                                 <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                                                     <div style="font-size: 25px;">Applicant Status</div>
-                                                    <form class="d-flex" role="search">
-                                                        <input class="form-control" type="search" placeholder="Search"
+                                                    <form class="d-flex" method="post" role="search">
+                                                        <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                                                             aria-label="Search" style="width:10cm;">
-                                                        <button class="btn btn-outline-success ml-2" type="submit">Search</button>
+                                                        <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                                                     </form>
                                                 </div>
                                                 <div class="card-body py-0" style="height: 10%;">
@@ -213,22 +222,27 @@ $result = mysqli_query($conn, $sql);
                                                                         <ul class="step-wizard-list mb-0">
                                                                             <li class="step-wizard-item">
                                                                                 <span class="progress-count">1</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(0%)</span>
                                                                                 <span class="progress-label">New Applicant</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 0) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">2</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(25%)</span>
                                                                                 <span class="progress-label">ROP</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 1) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">3</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(50%)</span>
                                                                                 <span class="progress-label">ICE</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 2) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">3</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(75%)</span>
                                                                                 <span class="progress-label">CLR</span>
                                                                             </li>
                                                                             <li class="step-wizard-item <?= ($completion == 3) ? 'current-item' : '' ?>">
                                                                                 <span class="progress-count">4</span>
+                                                                                <span class="progress-label" style="font-size: 10px;">(100%)</span>
                                                                                 <span class="progress-label">Completed</span>
                                                                             </li>
                                                                         </ul>

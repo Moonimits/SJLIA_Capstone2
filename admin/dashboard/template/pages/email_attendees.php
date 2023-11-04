@@ -1,9 +1,15 @@
 <?php
+session_start();
 include('../../../../dbcon.php');
 include('email.php');
 
-$massemail = "SELECT email, fullname FROM bybpreregistration";
+if(!empty($_SESSION['date'])){
+    $massemail = "SELECT email, fullname FROM bybpreregistration WHERE byb_date = '".$_SESSION['date']."'";
+}else{
+    $massemail = "SELECT email, fullname FROM bybpreregistration";
+}
 $massresult = mysqli_query($conn,$massemail);
+unset($_SESSION['date']);
 if(mysqli_num_rows($massresult)>0){
     while($massrow = mysqli_fetch_assoc($massresult)){
         $fullname = explode(' ' ,$massrow['fullname']);

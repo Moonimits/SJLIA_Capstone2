@@ -80,7 +80,7 @@ $result = mysqli_query($conn, $sql);
                     <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#massemail"><i class="fa-solid fa-envelope"></i>Mass Email</button>
                   </div>
                   <form class="d-flex" method="post">
-                      <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                      <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                           aria-label="Search" style="width:10cm;">
                       <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                   </form>
@@ -95,6 +95,7 @@ $result = mysqli_query($conn, $sql);
                               <th style="font-size: 16px">#</th>
                               <th style="font-size: 16px">Fullname</th>
                               <th style="font-size: 16px">Email</th>
+                              <th style="font-size: 16px">Contact Number</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -120,7 +121,8 @@ $result = mysqli_query($conn, $sql);
                                   <tr>
                                       <td><?= $count?></td>
                                       <td><?= $fullname?></td>
-                                      <td><?= $row['Email']?></td>                                    
+                                      <td><?= $row['Email']?></td>       
+                                      <td><?= $row['contact_number']?></td>                               
                                   </tr>
                                   <?php
                                   $count += 1;

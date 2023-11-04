@@ -47,14 +47,15 @@ if(isset($_POST['edit']))
 
 if(isset($_POST['mass_send'])){
   $message = filter_input(INPUT_POST, "message", FILTER_SANITIZE_SPECIAL_CHARS);
-
-  $massemail = "SELECT * FROM bybpreregistration";
+  $recipientdate = filter_input(INPUT_POST, "recipientdate", FILTER_SANITIZE_SPECIAL_CHARS);
+  
+  $massemail = "SELECT * FROM bybpreregistration WHERE byb_date = '$recipientdate'";
   $massresult = mysqli_query($conn,$massemail);
   if(mysqli_num_rows($massresult)>0){
       while($massrow = mysqli_fetch_assoc($massresult)){
           $email = $massrow['email'];
 
-          sendEmail($email,$message);
+          sendManualEmail($email,$message);
       }
   }else{
       ?>
@@ -166,10 +167,11 @@ $result = mysqli_query($conn, $sql);
                             if(isset($_POST['search'])){
                               if(!empty($_POST['searchdate'])){
                                 $searchdate = $_POST['searchdate'];
-                                
+                                $_SESSION['date'] = $searchdate;
                                 $sql = "SELECT * FROM bybpreregistration WHERE byb_date = '$searchdate'";
                               }else{
                                 $sql = "SELECT * FROM bybpreregistration";
+                                unset($_SESSION['date']);
                               }
                             }else{
                               $sql = "SELECT * FROM bybpreregistration";
@@ -218,8 +220,24 @@ $result = mysqli_query($conn, $sql);
                   <div class="modal-body">
                       <div class="row">
                           <div class="col-lg-12">
-                              <label for="">Recipients:</label>
-                              <input type="text" class="form-control" name="" id="" value="All" disabled>
+                              <label for="">Attendees on Date:</label>
+                              <form class="d-flex" method="post">
+                                <select type="date" class="form-control" name="recipientdate" required>
+                                  <option value="" disabled selected>BYB Date</option>
+                                  <?php
+                                  $sqldate = "SELECT DISTINCT byb_date FROM bybpreregistration";
+                                  $dateresult = mysqli_query($conn, $sqldate);
+                                  if($dateresult){
+                                    while($date = mysqli_fetch_assoc($dateresult)){
+                                      $options = date('F d Y', strtotime($date['byb_date']));
+                                      ?>
+                                      <option value="<?=$date['byb_date']?>"><?=$options?></option>
+                                      <?php
+                                    }
+                                  }
+                                  ?>
+                                </select>
+                              </form>
                           </div>
                           <div class="col-lg-12">
                               <label for="exampleFormControlTextarea1" class="form-label">Message: </label>

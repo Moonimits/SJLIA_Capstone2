@@ -53,7 +53,7 @@ $result = mysqli_query($conn, $sql);
                   <p></p>
                   <form class="mb-2 d-flex" method="post">
                     <div class="d-flex">
-                        <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                        <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                             aria-label="Search" style="width:10cm;">
                         <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                     </div>
@@ -65,7 +65,7 @@ $result = mysqli_query($conn, $sql);
                       if(isset($_POST['search'])){
                         $searchitem = $_POST['itemsearch'];
                         if(!empty($searchitem)){
-                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
                         }else{
                             $sql = "SELECT * FROM applicantdb";
                         }

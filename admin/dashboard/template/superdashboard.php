@@ -206,7 +206,7 @@ include('../../../dbcon.php');
                     <li class="nav-item">
                         <a class="nav-link" href="superpage/byb.php">
                             <i class="fa-solid fa-users-rectangle fa-lg menu-icon"></i>
-                            <span class="menu-title">BYB Attendees</span>
+                            <span class="menu-title">BYB Pre-Registered</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -232,17 +232,50 @@ include('../../../dbcon.php');
                                         <div class="container-sm">
                                             <div class="card border border-success border-3 rounded-4 mb-4">
                                                 <div class="row justify-content-center">
-                                                    <div class="col-lg-2 p-3 text-center">
-                                                        <h5>Total Clients</h5>
-                                                        <h1>10</h1>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Applicants</h5><br>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Prospects</h5><br>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total New Applicants</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-2 p-3 text-center border-end border-2">
+                                                        <h5>Total Temporary Agents</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
                                                     </div>
                                                     <div class="col-lg-2 p-3 text-center">
-                                                        <h5>Total Renewals</h5>
-                                                        <h1>10</h1>
-                                                    </div>
-                                                    <div class="col-lg-4 p-3 text-center">
-                                                        <h5>Commssions Earned</h5>
-                                                        <h1>₱60,000</h1>
+                                                        <h5>Total Licensed Agents</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
                                                     </div>
                                                 </div>
                                             </div>
@@ -264,7 +297,7 @@ include('../../../dbcon.php');
                                                 <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                                                     <div style="font-size: 25px;">Applicant List</div>
                                                     <form class="d-flex" method="post" role="search">
-                                                        <input class="form-control" type="search" placeholder="Search for Lastname"
+                                                        <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                                                             aria-label="Search" style="width:10cm;">
                                                         <button class="btn btn-outline-success ml-2" type="submit" name="search">Search</button>
                                                     </form>
@@ -272,7 +305,14 @@ include('../../../dbcon.php');
                                                 <div class="card-body" style="height: 10%;">
 
                                                 <?php
-                                                    if(isset($_POST['newapp'])){
+                                                    if(isset($_POST['search'])){
+                                                        $searchitem = $_POST['itemsearch'];
+                                                        if(!empty($searchitem)){
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+                                                        }else{
+                                                            $sql = "SELECT * FROM applicantdb";
+                                                        }
+                                                    }elseif(isset($_POST['newapp'])){
                                                         $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
                                                     }elseif(isset($_POST['tempagent'])){
                                                         $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
@@ -281,9 +321,10 @@ include('../../../dbcon.php');
                                                     }else{
                                                         $sql = "SELECT * FROM applicantdb";
                                                     }
+                                                    
                                                     $result = mysqli_query($conn, $sql);
 
-                                                        if (!mysqli_num_rows($result) < 0) {
+                                                        if (!mysqli_num_rows($result) > 0) {
                                                             ?>
                                                             <div class="row justify-content-center border-bottom border-secondary">
                                                                 <div class="col-lg-6">
@@ -295,7 +336,17 @@ include('../../../dbcon.php');
                                                             while ($row = mysqli_fetch_array($result)) {
 
                                                                 $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
-                                                                $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'];
+                                                                $address = $row['streetname'] . ', ' . $row['barangay'] . ', ' . $row['city'] . ', ' . $row['province'] . ' ' . $row['zip'];
+                                                                $dateInWords = date('F d Y', strtotime($row['birthdate']));
+                                                                $efullname = $row['e_last'] . ', ' . $row['e_first'] . ' ' . $row['e_middle'][0] . '.';
+
+                                                                //get age from date
+                                                                $c = date("Y-m-d");
+                                                                $birthdate = new DateTime($row['birthdate']);
+                                                                $currentdate = new DateTime($c);
+
+                                                                $ageInterval = $birthdate->diff($currentdate);
+                                                                $age = $ageInterval->y;
 
                                                                 $step5 = '';
                                                                 $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
@@ -319,14 +370,45 @@ include('../../../dbcon.php');
                                                                 } 
 
                                                                 if($completion == 0){
-                                                                    $statusClass = 'text-danger';
+                                                                    $statusClass = 'badge badge-pill badge-danger';
                                                                     $status = 'New Applicant';
-                                                                }elseif($completion >= 1 && $completion <=3){
-                                                                    $statusClass = 'text-warning';
-                                                                    $status = 'Temporary Agent';
+                                                                }elseif($completion >= 1 && $completion <= 3){
+                                                                    $statusClass = 'badge badge-pill badge-warning';
+                                                                    if($row['confirmed_elicense'] == 1){
+                                                                        $status = 'Temporary Agent (CLR)';                                            
+                                                                    }elseif($row['confirmed_documents'] == 1){
+                                                                        $status = 'Temporary Agent (ICE)';                                            
+                                                                    }elseif($row['confirmed_rop'] == 1){
+                                                                        $status = 'Temporary Agent (ROP)';                                            
+                                                                    }
                                                                 }elseif($completion == 4){
-                                                                    $statusClass = 'text-success';
-                                                                    $status = 'Licencsed Agent';
+                                                                    $statusClass = 'badge badge-pill badge-success';
+                                                                    $status = 'Licensed Agent';
+                                                                }
+
+                                                                //when is empty
+                                                                if(!empty($row['pluk'])){
+                                                                    $class = 'text-dark mb-0';
+                                                                    $pluk = $row['pluk'];
+                                                                }else{
+                                                                    $class = 'text-danger mb-0';
+                                                                    $pluk = 'N/A';
+                                                                }
+
+                                                                if(!empty($row['company_name'])){
+                                                                    $Comclass = 'text-dark mb-0';
+                                                                    $company = $row['company_name'];
+                                                                }else{
+                                                                    $Comclass = 'text-danger mb-0';
+                                                                    $company = 'N/A';
+                                                                }
+
+                                                                if(!empty($row['position'])){
+                                                                    $posclass = 'text-dark mb-0';
+                                                                    $position = $row['position'];
+                                                                }else{
+                                                                    $posclass = 'text-danger mb-0';
+                                                                    $position = 'N/A';
                                                                 }
                                                         ?>
                                                             <div class="row justify-content-center border-bottom border-secondary">
@@ -348,11 +430,15 @@ include('../../../dbcon.php');
                                                                 </div>
                                                                 <div class="col-lg-2 mt-5">
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Status:</p>
-                                                                    <p style="font-size: 15px;" class="<?= $statusClass?>"><?= $status?> <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal<?php echo $row['application_id'] ?>"><i class="fa-solid fa-question"></i></button></p>
+                                                                    <div class="d-flex">
+                                                                        <p style="font-size: 12px;" class="<?= $statusClass?> pt-2"><?= $status?></p>
+                                                                        <p><button class="btn btn-info btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modal<?php echo $row['application_id'] ?>"><i class="fa-solid fa-question"></i></button></p>
+                                                                        
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <!-- Modal -->
 
+                                                            <!-- Modal -->
                                                             <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                 <div class="modal-dialog modal-xl">
                                                                     <div class="modal-content">
@@ -369,33 +455,115 @@ include('../../../dbcon.php');
                                                                                             <ul class="step-wizard-list mb-0">
                                                                                                 <li class="step-wizard-item">
                                                                                                     <span class="progress-count">1</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(0%)</span>
                                                                                                     <span class="progress-label">New Applicant</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 0) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">2</span>
-                                                                                                    <span class="progress-label">Level 2</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(25%)</span>
+                                                                                                    <span class="progress-label">ROP Training</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 1) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
-                                                                                                    <span class="progress-label">Level 3</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(50%)</span>
+                                                                                                    <span class="progress-label">Insurance Commission Examination</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 2) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">3</span>
-                                                                                                    <span class="progress-label">Level 3</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(75%)</span>
+                                                                                                    <span class="progress-label">Completion of Licensing Requirements</span>
                                                                                                 </li>
                                                                                                 <li class="step-wizard-item <?= ($completion == 3) ? 'current-item' : '' ?>">
                                                                                                     <span class="progress-count">4</span>
+                                                                                                    <span class="progress-label" style="font-size: 10px;">(100%)</span>
                                                                                                     <span class="progress-label">Completed</span>
                                                                                                 </li>
                                                                                             </ul>
                                                                                         </section>
+                                                                                        
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row justify-content-center bg-light shadow rounded border border-success p-4 mb-2">
+                                                                                    <h4>Applicant Information</h4>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Fullname:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Gender:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Age:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Birth Place:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Date of Birth:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">ZIP Code:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Address:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-5">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $fullname ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['gender'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $age . ' Years' ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['birthplace'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $dateInWords ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['zip'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $address ?></p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Contact Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Email:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">PRU Email:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">SSS Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">TIN Number:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Civil Status:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['contact_number'] ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['Email'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="<?=$class?>"><?php echo $pluk ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['sss'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['tin'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['civil_status'] ?></p>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row mb-2">
+                                                                                    <div class="col bg-light shadow rounded border border-success p-4 me-1">
+                                                                                        <div class="row">
+                                                                                            <h4>Employment History</h4>
+                                                                                            <div class="col-lg-auto">
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Company Name: </p>
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Position: </p>
+                                                                                            </div>
+                                                                                            <div class="col-lg-3">
+                                                                                                <p style="font-size: 15px;" class="<?=$Comclass?>"><?=$company?></p>
+                                                                                                <p style="font-size: 15px;" class="<?=$posclass?>"><?=$position?></p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col bg-light shadow rounded border border-success p-4">
+                                                                                        <div class="row">
+                                                                                            <h4>Recruiter Information</h4>
+                                                                                            <div class="col-lg-auto">
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Fullname: </p>
+                                                                                                <p style="font-size: 15px;" class="text-secondary mb-0">Agent Code: </p>
+                                                                                            </div>
+                                                                                            <div class="col-lg-3">
+                                                                                                <p style="font-size: 15px;" class="text-dark mb-0"><?=$row['recruiter_name']?></p>
+                                                                                                <p style="font-size: 15px;" class="text-dark mb-0"><?=$row['recruiter_code']?></p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row bg-light shadow rounded border border-success p-4 mb-2">
+                                                                                    <h4>Incase fo Emergency</h4>
+                                                                                    <div class="col-lg-auto">
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Fullname:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Relationship:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Address:</p>
+                                                                                        <p style="font-size: 15px;" class="text-secondary mb-0">Contact Number:</p>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4">
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $efullname ?> </p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['applicant_rel'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_contact'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_address'] ?></p>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <p style="font-size: 15px;" class="text-secondary mb-0">Name:</p>
-                                                                            <p style="font-size: 15px;" class="text-dark"><?php echo $fullname ?> </p>
-                                                                            <p style="font-size: 15px;" class="text-secondary mb-0">Email:</p>
-                                                                            <p style="font-size: 15px;" class="text-dark"><?php echo $row['Email'] ?> </p>
                                                                         </div>
                                                                         <div class="modal-footer">
                                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

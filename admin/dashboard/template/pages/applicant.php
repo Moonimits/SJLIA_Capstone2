@@ -301,7 +301,7 @@ if(isset($_POST['confirm_elicense'])){
                                                 <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                                                     <div style="font-size: 25px;">Applicant Status</div>
                                                     <form class="d-flex" method="post">
-                                                        <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                                                        <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                                                             aria-label="Search" style="width:10cm;">
                                                         <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                                                     </form>
@@ -312,7 +312,7 @@ if(isset($_POST['confirm_elicense'])){
                                                     if(isset($_POST['search'])){
                                                         $searchitem = $_POST['itemsearch'];
                                                         if(!empty($searchitem)){
-                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
                                                         }else{
                                                             $sql = "SELECT * FROM applicantdb";
                                                         }

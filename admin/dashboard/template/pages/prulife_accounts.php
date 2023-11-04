@@ -52,7 +52,7 @@ $result = mysqli_query($conn, $sql);
                   
                   </div>
                   <form class="d-flex mb-2" method="post">
-                      <input class="form-control" name="itemsearch" type="search" placeholder="Search Lastname"
+                      <input class="form-control" name="itemsearch" type="search" placeholder="Search"
                           aria-label="Search" style="width:10cm;">
                       <button class="btn btn-outline-success ml-2" name="search" type="submit">Search</button>
                   </form>

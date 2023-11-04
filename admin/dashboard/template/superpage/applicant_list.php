@@ -58,7 +58,7 @@ include('../../../../dbcon.php');
                   <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                       <div style="font-size: 25px;">Applicant List</div>
                       <form class="d-flex" method="post" role="search">
-                          <input class="form-control" type="search" name="itemsearch" placeholder="Search for Lastname"
+                          <input class="form-control" type="search" name="itemsearch" placeholder="Search"
                               aria-label="Search" style="width:10cm;">
                           <button class="btn btn-outline-success ml-2" type="submit" name="search">Search</button>
                       </form>
@@ -67,12 +67,12 @@ include('../../../../dbcon.php');
 
                   <?php
                       if(isset($_POST['search'])){
-                          $lastname = $_POST['itemsearch'];
-                          if(!empty($lastname)){
-                              $sql = "SELECT * FROM applicantdb WHERE lastname = '$lastname'";
-                          }else{
-                              $sql = "SELECT * FROM applicantdb";
-                          }
+                        $searchitem = $_POST['itemsearch'];
+                        if(!empty($searchitem)){
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+                        }else{
+                            $sql = "SELECT * FROM applicantdb";
+                        }
                       }elseif(isset($_POST['newapp'])){
                           $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
                       }elseif(isset($_POST['tempagent'])){
@@ -102,44 +102,88 @@ include('../../../../dbcon.php');
                                   $step5 = '';
                                   $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
 
+                                  if($row['on_off1']==0){
+                                    $on_or_off1 = '<span class="badge badge-pill badge-danger">N/A</span>';
+                                  }elseif($row['on_off1']==1){
+                                    $on_or_off1 = '<span class="badge badge-pill badge-info">Offsite</span>';
+                                  }else{
+                                    $on_or_off1 = '<span class="badge badge-pill badge-success">Online</span>';
+                                  } 
+
+                                  if($row['on_off2']==0){
+                                    $on_or_off2 = '<span class="badge badge-pill badge-danger">N/A</span>';
+                                  }elseif($row['on_off2']==1){
+                                    $on_or_off2 = '<span class="badge badge-pill badge-info">Offsite</span>';
+                                  }else{
+                                    $on_or_off2 = '<span class="badge badge-pill badge-success">Online</span>';
+                                  }
+                                  
+                                  if($row['has_pruaccount']==0){
+                                    $joinpru = 'Undone';
+                                    $joinclass = 'text-danger font-weight-bold';
+                                  }else{
+                                    $joinpru = 'Done';
+                                    $joinclass = 'text-success font-weight-bold';
+                                  } 
+
+                                  $app_id = $row['application_id'];
+                                  $docsql = "SELECT * FROM documents WHERE application_id = '$app_id'";
+                                  $docresult = mysqli_query($conn, $docsql);
+                                  $docrow = mysqli_fetch_array($docresult);
+                                  if($docrow){
+                                    if($docrow['confirm_sss'] == 1 && $docrow['confirm_tin'] == 1 && $docrow['confirm_gov'] == 1 && $docrow['confirm_1x1'] == 1){
+                                      $document = '<p style="font-size: 14px;" class="mb-0 text-success">Complete</p>';
+                                    }else{
+                                      $document = '<p style="font-size: 14px;" class="mb-0 text-danger">Incomplete</p>';
+                                    }
+                                  }
+
                           ?>
                               <div class="row justify-content-center border-bottom border-secondary py-2">
-                                  <div class="col-lg-3 border-right">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Name: </b><?php echo $fullname ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Application ID: </b><?php echo '2345' ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Join Pru Account: </b><?php echo 'Done' ?></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Documents: </b><?php echo 'Complete' ?></p>
+                                  <div class="col-lg-2 p-0">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Name: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Application ID: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Join Pru Account: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Documents: </b></p>
                                   </div>
-                                  <div class="col-lg-3 border-right">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Unit Team: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Recruiter: </b><?php echo $row['recruiter_name'] ?></p>
+                                  <div class="col-lg-2 p-0">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $fullname ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['plukapplication_id'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0 <?=$joinclass?>"><?php echo $joinpru ?></p>
+                                    <?php echo $document?>
                                   </div>
-                                  <div class="col-lg-6">
-                                    <p style="font-size: 15px;" class="mb-0"><b>Date of Exam: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Type of Exam: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Date of Payment: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Official Receipt: </b></p>
-                                    <p style="font-size: 15px;" class="mb-0"><b>Exam Result: </b></p>
+                                  <div class="col-lg-1">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Unit Team: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Recruiter: </b></p>
+                                  </div>
+                                  <div class="col-lg-2 ">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo !empty($row['unit_team']) ? $row['unit_team'] : 'N/A' ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['recruiter_name'] ?></p>
+                                  </div>
+                                  <div class="col-lg-2">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Variable Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Traditional Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Variable of Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Traditional of Exam: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Payment: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Official Receipt: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Variable Exam Result: </b></p>
+                                    <p style="font-size: 13px;" class="mb-0"><b>Traditional Exam Result: </b></p>
+                                  </div>
+                                  <div class="col-lg-3">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_exam1'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_exam2'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $on_or_off1 ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $on_or_off2 ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_payment'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['official_reciept'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['exam_result1'] ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['exam_result2'] ?></p>
                                   </div>
                               </div>
                               <!-- Modal -->
 
-                              <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                  <div class="modal-dialog modal-xl">
-                                      <div class="modal-content">
-                                          <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Other Information</h5>
-                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                          </div>
-                                          <div class="modal-body">
-                                              
-                                          </div>
-                                          <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
+                              
                           <?php
                           }
                       }

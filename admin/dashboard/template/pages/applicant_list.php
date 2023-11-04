@@ -107,7 +107,7 @@ if(isset($_POST['addunit'])){
                   <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
                       <div style="font-size: 25px;">Applicant List</div>
                       <form class="d-flex" method="post" role="search">
-                          <input class="form-control" type="search" name="itemsearch" placeholder="Search for Lastname"
+                          <input class="form-control" type="search" name="itemsearch" placeholder="Search"
                               aria-label="Search" style="width:10cm;">
                           <button class="btn btn-outline-success ml-2" type="submit" name="search">Search</button>
                       </form>
@@ -118,7 +118,7 @@ if(isset($_POST['addunit'])){
                       if(isset($_POST['search'])){
                         $searchitem = $_POST['itemsearch'];
                         if(!empty($searchitem)){
-                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
                         }else{
                             $sql = "SELECT * FROM applicantdb";
                         }
