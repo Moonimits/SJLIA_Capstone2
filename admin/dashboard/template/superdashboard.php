@@ -199,7 +199,7 @@ include('../../../dbcon.php');
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="superpage/applicant_list.php">Applicant List</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="superpage/applicant.php">Roadmap</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="superpage/applicant.php">Status Progress Bar</a></li>
                             </ul>
                         </div>
                         </li>

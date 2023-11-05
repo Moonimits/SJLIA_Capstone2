@@ -201,11 +201,6 @@ if(isset($_POST['uploadSSS'])){
         $uploadsuccess = '
         <div class="alert alert-success alert-dismissible fade show" role="alert">
           Uploaded SSS proof!
-          <span class="progress-label" style="font-size: 10px;">(0%)</span>
-<span class="progress-label" style="font-size: 10px;">(25%)</span>
-<span class="progress-label" style="font-size: 10px;">(50%)</span>
-<span class="progress-label" style="font-size: 10px;">(75%)</span>
-<span class="progress-label" style="font-size: 10px;">(100%)</span>
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>';
       }

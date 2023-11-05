@@ -107,7 +107,7 @@ if($id == 1){
   $sql = "UPDATE applicantdb SET confirmed_rop = 1 WHERE application_id = '$appid'";
   $result = mysqli_query($conn, $sql);
   $message = 'Great news! Your uploaded ROP certificate has been approved successfully. Thank you for your submission!';
-
+ 
   $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$message')";
   $result = mysqli_query($conn, $sql);
 

@@ -30,6 +30,10 @@ if(isset($_POST['completed'])){
     
     $sql = "UPDATE applicantdb SET applicant_status = '$rstatus' WHERE application_id = '$id'";
     $result = mysqli_query($conn, $sql);
+    $message = 'Congratulations! Are now a Licensed Agent! You are now capable of adding clients on your client menu.';
+ 
+    $sql = "INSERT INTO notification(application_id, message) VALUES ('$id','$message')";
+    $result = mysqli_query($conn, $sql);
 }
 if(isset($_POST['confirm_rop'])){
     $id = $_POST['id'];
@@ -42,7 +46,7 @@ if(isset($_POST['confirm_rop'])){
     if($row['confirmed_rop'] == 0){
         $sql = "UPDATE applicantdb SET confirmed_rop = 1 WHERE application_id = '$id'";
     }else{
-        $sql = "UPDATE applicantdb SET confirmed_rop = 0 WHERE application_id = '$id'";
+        $sql = "UPDATE applicantdb SET confirmed_rop = 0, is_completed = 0 WHERE application_id = '$id'";
     }
     $result = mysqli_query($conn, $sql);
     
@@ -61,6 +65,12 @@ if(isset($_POST['confirm_rop'])){
     
     $sql = "UPDATE applicantdb SET applicant_status = '$rstatus' WHERE application_id = '$id'";
     $result = mysqli_query($conn, $sql);
+
+    $message = 'Great news! Your uploaded ROP certificate has been approved. Thank you for your submission! You are now a Temporary (ROP) Agent!';
+ 
+    $sql = "INSERT INTO notification(application_id, message) VALUES ('$id','$message')";
+    $result = mysqli_query($conn, $sql);
+
 }
 if(isset($_POST['confirm_docu'])){
     $id = $_POST['id'];
@@ -73,7 +83,7 @@ if(isset($_POST['confirm_docu'])){
     if($row['confirmed_documents'] == 0){
         $sql = "UPDATE applicantdb SET confirmed_documents = 1 WHERE application_id = '$id'";
     }else{
-        $sql = "UPDATE applicantdb SET confirmed_documents = 0 WHERE application_id = '$id'";
+        $sql = "UPDATE applicantdb SET confirmed_documents = 0, is_completed = 0  WHERE application_id = '$id'";
     }
     $result = mysqli_query($conn, $sql);
     
@@ -91,6 +101,10 @@ if(isset($_POST['confirm_docu'])){
     }
     
     $sql = "UPDATE applicantdb SET applicant_status = '$rstatus' WHERE application_id = '$id'";
+    $result = mysqli_query($conn, $sql);
+    $message = 'Great news! Are now a Temporary (ICE) Agent!';
+ 
+    $sql = "INSERT INTO notification(application_id, message) VALUES ('$id','$message')";
     $result = mysqli_query($conn, $sql);
 }
 if(isset($_POST['confirm_elicense'])){
@@ -104,7 +118,7 @@ if(isset($_POST['confirm_elicense'])){
     if($row['confirmed_elicense'] == 0){
         $sql = "UPDATE applicantdb SET confirmed_elicense = 1 WHERE application_id = '$id'";
     }else{
-        $sql = "UPDATE applicantdb SET confirmed_elicense = 0 WHERE application_id = '$id'";
+        $sql = "UPDATE applicantdb SET confirmed_elicense = 0, is_completed = 0  WHERE application_id = '$id'";
     }
     $result = mysqli_query($conn, $sql);
     
@@ -122,6 +136,11 @@ if(isset($_POST['confirm_elicense'])){
     }
     
     $sql = "UPDATE applicantdb SET applicant_status = '$rstatus' WHERE application_id = '$id'";
+    $result = mysqli_query($conn, $sql);
+
+    $message = 'Great news! Are now a Temporary (CLR) Agent!';
+ 
+    $sql = "INSERT INTO notification(application_id, message) VALUES ('$id','$message')";
     $result = mysqli_query($conn, $sql);
 }
 
@@ -418,9 +437,15 @@ if(isset($_POST['confirm_elicense'])){
                                                                             <div class="col-lg-auto text-center">
                                                                                 <?php
                                                                                 if($row['confirmed_documents'] == 0){
-                                                                                    ?>
-                                                                                    <button type="submit" name="confirm_docu" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
-                                                                                    <?php
+                                                                                    if($row['confirmed_rop'] == 0){
+                                                                                        ?>
+                                                                                        <button class="btn btn-success btn-sm " disabled><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="confirm_docu" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }
                                                                                 }else{
                                                                                     ?>
                                                                                     <button type="submit" name="confirm_docu" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
@@ -432,9 +457,15 @@ if(isset($_POST['confirm_elicense'])){
                                                                             <div class="col-lg-auto text-center">
                                                                                 <?php
                                                                                 if($row['confirmed_elicense'] == 0){
-                                                                                    ?>
-                                                                                    <button type="submit" name="confirm_elicense" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
-                                                                                    <?php
+                                                                                    if($row['confirmed_documents'] == 0){
+                                                                                        ?>
+                                                                                        <button class="btn btn-success btn-sm " disabled><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="confirm_elicense" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }
                                                                                 }else{
                                                                                     ?>
                                                                                     <button type="submit" name="confirm_elicense" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
@@ -446,9 +477,16 @@ if(isset($_POST['confirm_elicense'])){
                                                                             <div class="col-lg-auto text-center">
                                                                                 <?php
                                                                                 if($row['is_completed'] == 0){
-                                                                                    ?>
-                                                                                    <button type="submit" name="completed" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
-                                                                                    <?php
+                                                                                    if($row['confirmed_elicense'] == 0 || $row['confirmed_rop'] == 0 || $row['confirmed_documents'] == 0){
+                                                                                        ?>
+                                                                                        <button class="btn btn-success btn-sm " disabled><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="completed" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
+                                                                                        <?php
+                                                                                    }
+                                                                                    
                                                                                 }else{
                                                                                     ?>
                                                                                     <button type="submit" name="completed" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>

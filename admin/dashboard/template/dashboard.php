@@ -254,7 +254,7 @@ if(isset($_POST['mass_send'])){
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="pages/applicant_list.php">Applicant List</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="pages/applicant.php">Roadmap</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="pages/applicant.php">Status Progress Bar</a></li>
                             <li class="nav-item"> <a class="nav-link" href="pages/applicant_docs.php">Documents</a></li>
                             </ul>
                         </div>
