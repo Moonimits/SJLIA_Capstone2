@@ -43,47 +43,7 @@ $crslerror = '';
       $fileSize = $_FILES["dp"]["size"];
       $tmpName = $_FILES["dp"]["tmp_name"];
       
-      if(!empty($fileName)){
-          $imageExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-          $imageExtension = strtolower($imageExtension);
-          $validExtension = ['jpg','jpeg','png'];
       
-          if(!in_array($imageExtension, $validExtension))
-          {
-            $crlserror = '
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              Invalid image extension!
-              <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>';
-          }
-          elseif($fileSize > 5000000)
-          {
-            $crslerror ='
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              Image size is too large!
-              <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>';
-          }
-          else
-          {
-                  
-            $newImageName = uniqid() . '.' . $imageExtension;
-            
-      
-          }
-      }else{
-        $crslerror ='
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            You need to Input a Photo!
-            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>';
-      }
 
       //gender
       $gender = '';
@@ -126,80 +86,153 @@ $crslerror = '';
       }
   
   
-      $sql = "SELECT * FROM applicantdb WHERE email = '$email'";
+      $sql = "SELECT * FROM applicantdb";
       $result = mysqli_query($conn, $sql); 
-  
-      if(mysqli_num_rows($result)>0){//so if meron result, may error na email has been taken
-          $error = 
-          '
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          Email has already been taken!
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          ';
-      }elseif($password != $cpassword){//so if meron result, may error na email has been taken
-        $error = 
-        '
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        Confirm password mismatch!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        ';
-      }
-      else
-      {
-          $uploadDir = '../applicant/applicant_page/profile_img/' . $newImageName;      
-          move_uploaded_file($tmpName, $uploadDir);
+      $row = mysqli_fetch_array($result);
 
-          $sql = "INSERT INTO `applicantdb`(`Email`, `Lastname`, `Firstname`, `Middlename`, 
-          `birthdate`, `birthplace`, `gender`, `civil_status`, `contact_number`, `streetname`, `barangay`, `city`, `province`,
-           `zip`, `sss`, `tin`, `password`, `recruiter_name`,`recruiter_code`,`e_last`, `e_first`, `e_middle`, `applicant_rel`,
-            `agent_contact`, `agent_address`, `company_name`, `position`, `if_maiden`, `gov_employ`,
-             `if_spouse`,`profile_pic,applicant_status`)
-          VALUES ('$email','$lastname', '$firstname','$middlename','$birthday','$birthplace','$gender',
-          '$civilstatus','$contact','$lot','$barangay','$city','$province','$zip','$sss','$tin','$password','$agentname',
-          '$agentcode','$elast','$efirst','$emiddle','$rel','$econtact','$eaddress','$companyname','$position','$maiden',
-          '$gov_emp','$spouse','$newImageName','New Applicant')";
-          $result = mysqli_query($conn, $sql);
-  
-          $docusql = "INSERT INTO documents (sss,tin,gov_id,1x1) VALUES ('','','','')";
-          $docusql = mysqli_query($conn, $docusql);
-          
-          if($result){
-            ?>
-            <link rel="stylesheet" href="popup_style.css">
-            <div class="popup popup--icon -success js_success-popup popup--visible">
-              <div class="popup__background"></div>
-              <div class="popup__content">
-                <h3 class="popup__content__title">
-                  Registration Success 
-                </h3>
-                
-                <p>
-                  <a href='../all/index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
-                </p>
-              </div>
-            </div>
-            <?php
-          }else{
-            ?>
-            <link rel="stylesheet" href="popup_style.css">
-            <div class="popup popup--icon -error js_error-popup popup--visible">
-              <div class="popup__background"></div>
-              <div class="popup__content">
-                <h3 class="popup__content__title">
-                  Registration Failed 
-                </h3>
-                <p>Something went wrong</p>
-                
-                <p>
-                  <a href='index.php'><button class="button button--success" data-for="js_error-popup">OK</button></a>
-                </p>
-              </div>
-            </div>
-            <?php
+      $emailTaken = false;
+      $sssTaken = false;
+      $tinTaken = false;
+
+      while ($row = mysqli_fetch_array($result)) {
+          if ($email == $row['Email']) {
+              $emailTaken = true;
+          }
+          if ($sss == $row['sss']) {
+              $sssTaken = true;
+          }
+          if ($tin == $row['tin']) {
+              $tinTaken = true;
           }
       }
+
+      if(!empty($fileName)){
+          $imageExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+          $imageExtension = strtolower($imageExtension);
+          $validExtension = ['jpg','jpeg','png'];
+      
+          if(!in_array($imageExtension, $validExtension))
+          {
+            $crlserror = '
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              Invalid image extension!
+              <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>';
+          }
+          elseif($fileSize > 5000000)
+          {
+            $crslerror ='
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              Image size is too large!
+              <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>';
+          }
+          else
+          {
+                  
+            $newImageName = uniqid() . '.' . $imageExtension;
+            if($emailTaken){//so if meron result, may error na email has been taken
+                $error = 
+                '
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Email has already been taken!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                ';
+            }elseif($sssTaken){//so if meron result, may error na sss has been taken
+                $error = 
+                '
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Has similar SSS number!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                ';
+            }elseif($tinTaken){//so if meron result, may error na tin has been taken
+                $error = 
+                '
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Has similar TIN number!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                ';
+            }elseif($password != $cpassword){
+              $error = 
+              '
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              Confirm password mismatch!
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              ';
+            }
+            else
+            {
+                $uploadDir = '../applicant/applicant_page/profile_img/' . $newImageName;      
+                move_uploaded_file($tmpName, $uploadDir);
+
+                $sql = "INSERT INTO `applicantdb`(`Email`, `Lastname`, `Firstname`, `Middlename`, 
+                `birthdate`, `birthplace`, `gender`, `civil_status`, `contact_number`, `streetname`, `barangay`, `city`, `province`,
+                  `zip`, `sss`, `tin`, `password`, `recruiter_name`,`recruiter_code`,`e_last`, `e_first`, `e_middle`, `applicant_rel`,
+                  `agent_contact`, `agent_address`, `company_name`, `position`, `if_maiden`, `gov_employ`,
+                    `if_spouse`,`profile_pic`,`applicant_status`)
+                VALUES ('$email','$lastname', '$firstname','$middlename','$birthday','$birthplace','$gender',
+                '$civilstatus','$contact','$lot','$barangay','$city','$province','$zip','$sss','$tin','$password','$agentname',
+                '$agentcode','$elast','$efirst','$emiddle','$rel','$econtact','$eaddress','$companyname','$position','$maiden',
+                '$gov_emp','$spouse','$newImageName','New Applicant')";
+                $result = mysqli_query($conn, $sql);
+
+                $docusql = "INSERT INTO documents (sss,tin,gov_id,1x1) VALUES ('','','','')";
+                $docusql = mysqli_query($conn, $docusql);
+                
+                if($result){
+                  ?>
+                  <link rel="stylesheet" href="popup_style.css">
+                  <div class="popup popup--icon -success js_success-popup popup--visible">
+                    <div class="popup__background"></div>
+                    <div class="popup__content">
+                      <h3 class="popup__content__title">
+                        Registration Success 
+                      </h3>
+                      
+                      <p>
+                        <a href='../all/index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+                      </p>
+                    </div>
+                  </div>
+                  <?php
+                }else{
+                  ?>
+                  <link rel="stylesheet" href="popup_style.css">
+                  <div class="popup popup--icon -error js_error-popup popup--visible">
+                    <div class="popup__background"></div>
+                    <div class="popup__content">
+                      <h3 class="popup__content__title">
+                        Registration Failed 
+                      </h3>
+                      <p>Something went wrong</p>
+                      
+                      <p>
+                        <a href='index.php'><button class="button button--success" data-for="js_error-popup">OK</button></a>
+                      </p>
+                    </div>
+                  </div>
+                  <?php
+                }
+            }
+      
+          }
+      }else{
+        $crslerror ='
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            You need to Input a Photo!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            </button>
+          </div>';
+      }
+      
   }
   
 ?>
@@ -209,6 +242,7 @@ $crslerror = '';
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="../images/logajade.png" type="image/x-icon">
     <title>Southern Jade</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
@@ -276,7 +310,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="firstname" placeholder="Enter First Name" class="form-control form-control-sm">
+                <input type="text" name="firstname" value="<?php echo !empty($_POST['firstname'])? htmlspecialchars($_POST['firstname']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm">
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Middle Name </label>
@@ -284,7 +318,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="middlename" placeholder="Enter Middle Name" class="form-control form-control-sm">
+                <input type="text" name="middlename" value="<?php echo !empty($_POST['middlename'])? htmlspecialchars($_POST['middlename']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -295,7 +329,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="lastname" placeholder="Enter Last Name" class="form-control form-control-sm">
+                <input type="text" name="lastname" value="<?php echo !empty($_POST['lastname'])? htmlspecialchars($_POST['lastname']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm">
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Gender</label>
@@ -303,8 +337,8 @@ $crslerror = '';
                   <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8 pt-1">
-                <input type="radio" name="gender" value="male"> Male &nbsp;&nbsp; 
-                <input type="radio" name="gender" value="female"> Female &nbsp;&nbsp; 
+                <input type="radio" name="gender" value="male" <?php echo !empty($_POST['gender']) && $_POST['gender']=='male'? 'checked' : ''?>> Male &nbsp;&nbsp; 
+                <input type="radio" name="gender" value="female" <?php echo !empty($_POST['gender']) && $_POST['gender']=='female'? 'checked' : ''?>> Female &nbsp;&nbsp; 
               </div>
           </div>
 
@@ -319,7 +353,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="date" name="birthday" placeholder="Enter Date of Birth" class="form-control form-control-sm">
+                <input type="date" name="birthday" value="<?php echo !empty($_POST['birthday'])? htmlspecialchars($_POST['birthday']) : ''?>" placeholder="Enter Date of Birth" class="form-control form-control-sm">
               </div>
 
 
@@ -329,7 +363,7 @@ $crslerror = '';
                   <span class="indc">:</span>
                </div>
                <div class="col-lg-4 col-md-8">
-                 <input type="text" name="birthplace" placeholder="Enter Date of Birth" class="form-control form-control-sm">
+                 <input type="text" name="birthplace" value="<?php echo !empty($_POST['birthplace'])? htmlspecialchars($_POST['birthplace']) : ''?>" placeholder="Enter Birth Place" class="form-control form-control-sm">
                </div>
             </div>
             <div class="form-row row">
@@ -338,7 +372,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="sss" placeholder="Enter SSS Number" class="form-control form-control-sm">
+                <input type="number" name="sss" value="<?php echo !empty($_POST['sss'])? htmlspecialchars($_POST['sss']) : ''?>" placeholder="Enter SSS Number" class="form-control form-control-sm">
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -346,7 +380,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="tin" placeholder="Enter TIN Number" class="form-control form-control-sm">
+                <input type="number" name="tin" value="<?php echo !empty($_POST['tin'])? htmlspecialchars($_POST['tin']) : ''?>" placeholder="Enter TIN Number" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -359,9 +393,9 @@ $crslerror = '';
                   <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8 pt-1">
-                <input type="radio" name="civil" value="single" id="singleRadio" > Single &nbsp;&nbsp;
-                <input type="radio" name="civil" value="married" id="marriedRadio" > Married &nbsp;&nbsp;
-                <input type="radio" name="civil" value="widow" id="widowRadio" > Widow 
+                <input type="radio" name="civil" value="single" id="singleRadio" <?php echo !empty($_POST['civil']) && $_POST['civil']=='single'? 'checked' : ''?>> Single &nbsp;&nbsp;
+                <input type="radio" name="civil" value="married" id="marriedRadio" <?php echo !empty($_POST['civil']) && $_POST['civil']=='married'? 'checked' : ''?>> Married &nbsp;&nbsp;
+                <input type="radio" name="civil" value="widow" id="widowRadio" <?php echo !empty($_POST['civil']) && $_POST['civil']=='widow'? 'checked' : ''?>> Widow 
               </div>
             </div>
 
@@ -374,7 +408,7 @@ $crslerror = '';
                   <span class="indc">:</span>
                 </div>
                 <div class="col-lg-4 col-md-8">
-                  <input type="text" name="spouse" placeholder="Enter Spouse Complete Name" class="form-control form-control-sm">
+                  <input type="text" name="spouse" value="<?php echo !empty($_POST['spouse'])? htmlspecialchars($_POST['spouse']) : ''?>" placeholder="Enter Spouse Complete Name" class="form-control form-control-sm">
                 </div>
 
                 <div class="col-lg-2 col-md-4">
@@ -383,7 +417,7 @@ $crslerror = '';
                   <span class="indc">:</span>
                 </div>
                 <div class="col-lg-4 col-md-8">
-                  <input type="text" name="maiden" placeholder="Enter Maiden Name" class="form-control form-control-sm">
+                  <input type="text" name="maiden" value="<?php echo !empty($_POST['maiden'])? htmlspecialchars($_POST['maiden']) : ''?>" placeholder="Enter Maiden Name" class="form-control form-control-sm">
                 </div>
             </div>
 
@@ -398,7 +432,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="contact" placeholder="Enter Mobile Numbber" class="form-control form-control-sm">
+                <input type="number" name="contact" value="<?php echo !empty($_POST['contact'])? htmlspecialchars($_POST['contact']) : ''?>" placeholder="Enter Mobile Numbber" class="form-control form-control-sm">
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -407,7 +441,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="zip" placeholder="Enter Zip Code" class="form-control form-control-sm">
+                <input type="number" name="zip" value="<?php echo !empty($_POST['zip'])? htmlspecialchars($_POST['zip']) : ''?>" placeholder="Enter Zip Code" class="form-control form-control-sm">
               </div>
             </div>
             
@@ -415,17 +449,17 @@ $crslerror = '';
           <div class="col-md-4 mb-3">
               <label class="form-label">Region <sup class="req">*</sup> </label>
               <select class="form-control form-control-sm" id="region"></select>
-              <input type="hidden" class="form-control form-control-sm" name="region" id="region-text" required>
+              <input type="hidden" class="form-control form-control-sm" name="region" value="<?php echo !empty($_POST['region'])? htmlspecialchars($_POST['region']) : ''?>" id="region-text" required>
           </div>
           <div class="col-md-4 mb-3">
               <label class="form-label">Province <sup class="req">*</sup> </label>
               <select class="form-control form-control-sm" id="province"></select>
-              <input type="hidden" class="form-control form-control-sm" name="province" id="province-text" required>
+              <input type="hidden" class="form-control form-control-sm" name="province" value="<?php echo !empty($_POST['province'])? htmlspecialchars($_POST['province']) : ''?>" id="province-text" required>
           </div>
           <div class="col-md-4 mb-3">
               <label class="form-label">City / Municipality <sup class="req">*</sup> </label>
               <select class="form-control form-control-sm" id="city"></select>
-              <input type="hidden" class="form-control form-control-sm" name="city" id="city-text" required>
+              <input type="hidden" class="form-control form-control-sm" name="city" value="<?php echo !empty($_POST['city'])? htmlspecialchars($_POST['city']) : ''?>" id="city-text" required>
           </div>
         </div>
         <div class="form-row row">
@@ -434,7 +468,7 @@ $crslerror = '';
           </div>
           <div class="col-md-4">
             <select class="form-control form-control-sm" id="barangay"></select>
-            <input type="hidden" class="form-control form-control-sm" name="barangay" id="barangay-text" required>
+            <input type="hidden" class="form-control form-control-sm" name="barangay" value="<?php echo !empty($_POST['barangay'])? htmlspecialchars($_POST['barangay']) : ''?>" id="barangay-text" required>
           </div>
   
           <div class="col-lg-3 col-md-0">
@@ -442,7 +476,7 @@ $crslerror = '';
             <sup class="req">*</sup>
           </div>
           <div class="col-lg-4 col-md-8 pt-1">
-            <input type="text" class="form-control form-control-sm" name="lot" id="lot" required>
+            <input type="text" class="form-control form-control-sm" name="lot" value="<?php echo !empty($_POST['lot'])? htmlspecialchars($_POST['lot']) : ''?>" id="lot" required>
           </div>
         </div>
                
@@ -457,7 +491,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="agentname" placeholder="Enter Agent Fullname" class="form-control form-control-sm">
+                <input type="text" name="agentname" value="<?php echo !empty($_POST['agentname'])? htmlspecialchars($_POST['agentname']) : ''?>" placeholder="Enter Agent Fullname" class="form-control form-control-sm">
               </div>
             
               
@@ -467,7 +501,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="agentcode" placeholder="Enter Agent's Code" class="form-control form-control-sm">
+                <input type="number" name="agentcode" value="<?php echo !empty($_POST['agentcode'])? htmlspecialchars($_POST['agentcode']) : ''?>" placeholder="Enter Agent's Code" class="form-control form-control-sm">
               </div>
 
              <div class="form-title row">
@@ -482,7 +516,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="efirst" placeholder="Enter First Name" class="form-control form-control-sm">
+                <input type="text" name="efirst" value="<?php echo !empty($_POST['efirst'])? htmlspecialchars($_POST['efirst']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm">
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Middle Name </label>
@@ -490,7 +524,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="emiddle" placeholder="Enter Middle Name" class="form-control form-control-sm">
+                <input type="text" name="emiddle" value="<?php echo !empty($_POST['emiddle'])? htmlspecialchars($_POST['emiddle']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -501,7 +535,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="elast" placeholder="Enter Last Name" class="form-control form-control-sm">
+                <input type="text" name="elast" value="<?php echo !empty($_POST['elast'])? htmlspecialchars($_POST['elast']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm">
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Relationship</label>
@@ -509,7 +543,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="rel" placeholder="Enter Relationship to Applicant" class="form-control form-control-sm">
+                <input type="text" name="rel" value="<?php echo !empty($_POST['rel'])? htmlspecialchars($_POST['rel']) : ''?>" placeholder="Enter Relationship to Applicant" class="form-control form-control-sm">
               </div>
             </div>
               
@@ -520,7 +554,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="econtact" placeholder="Enter Contact Numbber" class="form-control form-control-sm">
+                <input type="number" name="econtact" value="<?php echo !empty($_POST['econtact'])? htmlspecialchars($_POST['econtact']) : ''?>" placeholder="Enter Contact Numbber" class="form-control form-control-sm">
               </div>
                <div class="col-lg-2 col-md-4">
                 <label for=""> Address</label>
@@ -528,7 +562,7 @@ $crslerror = '';
                   <span class="indc">:</span>
               </div>
                <div class="col-lg-4 col-md-8">
-                <input type="text" name="eaddress" placeholder="Enter Address" class="form-control form-control-sm">
+                <input type="text" name="eaddress" value="<?php echo !empty($_POST['eaddress'])? htmlspecialchars($_POST['eaddress']) : ''?>" placeholder="Enter Address" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -541,8 +575,8 @@ $crslerror = '';
                 <label for="">Are you a Government Employee?<sup class="req">*</sup></label>
               </div>
               <div class="col-lg-2 col-md-8">
-                <input type="radio" name="gov" value="yes" id="govyesRadio"> Yes &nbsp;&nbsp;
-                <input type="radio" name="gov" value="no" id="govnoRadio" checked> No
+                <input type="radio" name="gov" value="yes" id="govyesRadio" <?php echo !empty($_POST['gov']) && $_POST['gov']=='yes'? 'checked' : ''?>> Yes &nbsp;&nbsp;
+                <input type="radio" name="gov" value="no" id="govnoRadio" <?php echo !empty($_POST['gender']) && $_POST['gender']=='no'? 'checked' : ''?>> No
               </div>
               <div class="col-lg-2" id="govUploadLabel">
                 
@@ -555,7 +589,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="companyname" placeholder="Enter Company Name " class="form-control form-control-sm" >
+                <input type="text" name="companyname" value="<?php echo !empty($_POST['companyname'])? htmlspecialchars($_POST['companyname']) : ''?>" placeholder="Enter Company Name " class="form-control form-control-sm" >
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -564,7 +598,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="position" placeholder="Enter your Position " class="form-control form-control-sm" >
+                <input type="text" name="position" value="<?php echo !empty($_POST['position'])? htmlspecialchars($_POST['position']) : ''?>" placeholder="Enter your Position " class="form-control form-control-sm" >
               </div>
             </div>
 
@@ -578,7 +612,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="email" name="email" placeholder="example@gmail.com" class="form-control form-control-sm">
+                <input type="email" name="email" value="<?php echo !empty($_POST['email'])? htmlspecialchars($_POST['email']) : ''?>" placeholder="example@gmail.com" class="form-control form-control-sm">
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Password </label>
@@ -586,7 +620,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="password" name="password" placeholder="Enter your password" class="form-control form-control-sm">
+                <input type="password" name="password" value="<?php echo !empty($_POST['password'])? htmlspecialchars($_POST['password']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -598,7 +632,7 @@ $crslerror = '';
               </div>
 
               <div class="col-lg-4 col-md-8">
-                <input type="password" name="cpassword" placeholder="Enter your password" class="form-control form-control-sm">
+                <input type="password" name="cpassword" value="<?php echo !empty($_POST['cpassword'])? htmlspecialchars($_POST['cpassword']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm">
               </div>
             </div>
 
