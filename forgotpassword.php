@@ -1,49 +1,39 @@
 <?php
-session_start();
-include("../dbcon.php");
-include("../admin/dashboard/template/pages/email.php");
+include("dbcon.php");
+$token = $_GET['token'];
 $error = '';
+if(isset($_POST['submit'])){
+    $newPass = filter_input(INPUT_POST, "newPassword", FILTER_SANITIZE_SPECIAL_CHARS);
+    $cnewPass = filter_input(INPUT_POST, "cnewPassword", FILTER_SANITIZE_SPECIAL_CHARS);
 
-if(isset($_POST["submit"])){
-    $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_SPECIAL_CHARS);
-    $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
-
-    $sql = "SELECT * FROM applicantdb WHERE Email = '$email'";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_array($result);
-
-    if($row){
-        if($password == $row['password']){
-            $_SESSION['applicant_id'] = $row['application_id'];
-            
+    if($newPass == $cnewPass){
+        $sql = "UPDATE applicantdb SET password = '$newPass' WHERE application_id = '$token'";
+        $result = mysqli_query($conn, $sql);
+    
+        if($result){
             ?>
-            <link rel="stylesheet" href="../registration/popup_style.css">
+            <link rel="stylesheet" href="registration/popup_style.css">
             <div class="popup popup--icon -success js_error-popup popup--visible">
                 <div class="popup__background"></div>
                 <div class="popup__content">
                 <h3 class="popup__content__title">
-                    Login Successful 
+                    Password Changed!
                 </h3>
+                <p>You can now proceed to login!</p>
                 <p>
-                    <a href="../applicant/applicant_page/index.php"><button class="button button--success" data-for="js_success-popup">close</button></a>
+                    <a href="homepage.php"><button class="button button--success" data-for="js_success-popup">OK</button></a>
                 </p>
                 </div>
             </div>
             <?php
-        }else{
-            $error = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                Wrong Password!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>';
         }
-    }
-    else
-    {
+    }else{
         $error = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                This email has not been registered!
+                Password mismatch!
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>';
     }
+    
 }
 ?>
 <!DOCTYPE html>
@@ -53,7 +43,6 @@ if(isset($_POST["submit"])){
     
 <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="icon" href="images/logajade.png" type="image/x-icon">
   <title>Southern Jade Life Insurance</title>
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -71,13 +60,11 @@ body {
   position: relative; /* Required for the ::before pseudo-element */
   background-image: url("images/bldg.jpg");
   background-size: cover;
-  min-height: 100vh; 
 }
 
 body::before {
   content: "";
   position: absolute;
-  height: 100vh; /* Use viewport height for full coverage */
   top: 0;
   left: 0;
   right: 0;
@@ -85,15 +72,10 @@ body::before {
   background-color: rgba(0, 0, 0, 0.5); /* This sets the overlay background color with 50% opacity */
   z-index: -1; /* Place the overlay behind other content */
 }
-
     </style>
 <nav class="navbar bg-body-tertiary shadow-none">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <img src="images/logo-topnav.png" alt="Logo" width="290" height="55" class="d-inline-block align-text-top">
-        <div class="d-inline" style="margin-right:50px;">
-            <a href="#" style="color: azure; margin-right: 30px;">Log In</a>
-            <a href="about.php" style="color: azure;">About Us</a>
-        </div>
     </div>
 </nav>
 
@@ -120,36 +102,23 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
 
                                 <form method="post">
                                     <div class="row justify-content-center">
+                                        <?php
+                                        echo $error;
+                                        ?>
                                         <div class="col-md-10 text-center">
-                                            <?php
-                                            echo $error;
-                                            ?>
                                             <div class="form-outline mb-4">
-                                                <input type="email" name="email" id="loginName" class="form-control text-white"
-                                                value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required />
-                                                <label class="form-label text-white" for="loginName">Email</label>
-                                            </div>
-
-                                            <div class="form-outline mb-4">
-                                                <input type="password" name="password" id="loginPassword"
+                                                <input type="password" name="newPassword" id="newPassword"
                                                     class="form-control text-white" required />
-                                                <label class="form-label text-white" for="loginPassword">Password</label>
+                                                <label class="form-label text-white" for="loginPassword">New Password</label>
                                             </div>
-
+                                            <div class="form-outline mb-4">
+                                                <input type="password" name="cnewPassword" id="cnewPassword"
+                                                    class="form-control text-white" required />
+                                                <label class="form-label text-white" for="loginPassword">Confirm New Password</label>
+                                            </div>
                                             <div class="text-center">
                                                 <button type="submit" name="submit"
-                                                    class="btn btn-primary mb-4 w-50">Log In</button>
-                                            </div>
-
-                                            <!-- Register buttons -->
-                                            <div class="text-center text-white">
-                                                <?php
-                                                if(isset($_POST['email'])){
-                                                    ?>
-                                                    <a href="forgotmsg.php?email=<?=$_POST['email']?>">Forgot Password?</a>
-                                                    <?php
-                                                }
-                                                ?>
+                                                    class="btn btn-primary mb-4 w-50">Submit</button>
                                             </div>
                                         </div>
                                     </div>
@@ -162,7 +131,7 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
         </div>
     </div>
 
-
+<br><br><br><br><br><br><br><br><br><br><br><br>
     <!-- MDB -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>

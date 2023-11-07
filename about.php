@@ -1,7 +1,7 @@
 <?php
 session_start();
-include("../dbcon.php");
-include("../admin/dashboard/template/pages/email.php");
+include("dbcon.php");
+include("admin/dashboard/template/pages/email.php");
 ?>
 <!DOCTYPE html>
 <html>

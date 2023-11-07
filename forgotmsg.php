@@ -1,6 +1,6 @@
 <?php
-include("../dbcon.php");
-include("../admin/dashboard/template/pages/email.php");
+include("dbcon.php");
+include("admin/dashboard/template/pages/email.php");
 $email = $_GET['email'];
     
 $sql = "SELECT application_id FROM applicantdb WHERE Email = '$email'";

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../dbcon.php");
+include("dbcon.php");
 
 $error = '';
 if(isset($_POST['submit'])){
@@ -17,7 +17,7 @@ if(isset($_POST['submit'])){
 
     if($result){
         ?>
-        <link rel="stylesheet" href="../registration/popup_style.css">
+        <link rel="stylesheet" href="registration/popup_style.css">
         <div class="popup popup--icon -success js_error-popup popup--visible">
             <div class="popup__background"></div>
             <div class="popup__content">
@@ -26,7 +26,7 @@ if(isset($_POST['submit'])){
             </h3>
             <p>You can now close this window</p>
             <p>
-                <a href="../applicant/applicant_page/index.php"><button class="button button--success" data-for="js_success-popup">close</button></a>
+                <a href="applicant/applicant_page/index.php"><button class="button button--success" data-for="js_success-popup">close</button></a>
             </p>
             </div>
         </div>
