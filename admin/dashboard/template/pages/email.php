@@ -14,12 +14,12 @@ function sendEmail($email,$message)
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'marcxperrez@gmail.com';
-    $mail->Password = 'gdphpcefmdnvjhsd';
+    $mail->Username = 'southernjadeagency@gmail.com';
+    $mail->Password = 'lcwbmqqtvphjtvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
-    $mail->setFrom('marcxperrez@gmail.com');
+    $mail->setFrom('southernjadeagency@gmail.com');
     $mail->addAddress($email);//
     $mail->Subject = $subject;//
     $mail->msgHTML($message);//
@@ -67,12 +67,12 @@ function sendManualEmail($email,$message)
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'marcxperrez@gmail.com';
-    $mail->Password = 'gdphpcefmdnvjhsd';
+    $mail->Username = 'southernjadeagency@gmail.com';
+    $mail->Password = 'lcwbmqqtvphjtvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
-    $mail->setFrom('marcxperrez@gmail.com');
+    $mail->setFrom('southernjadeagency@gmail.com');
     $mail->addAddress($email);//
     $mail->Subject = $subject;//
     $mail->msgHTML($message);//
@@ -120,12 +120,12 @@ function sendRegistration($email,$message)
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'marcxperrez@gmail.com';
-    $mail->Password = 'gdphpcefmdnvjhsd';
+    $mail->Username = 'southernjadeagency@gmail.com';
+    $mail->Password = 'lcwbmqqtvphjtvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
-    $mail->setFrom('marcxperrez@gmail.com');
+    $mail->setFrom('southernjadeagency@gmail.com');
     $mail->addAddress($email);//
     $mail->Subject = $subject;//
     $mail->msgHTML($message);//
@@ -173,12 +173,12 @@ function forgotPassword($email,$message)
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'marcxperrez@gmail.com';
-    $mail->Password = 'gdphpcefmdnvjhsd';
+    $mail->Username = 'southernjadeagency@gmail.com';
+    $mail->Password = 'lcwbmqqtvphjtvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
-    $mail->setFrom('marcxperrez@gmail.com');
+    $mail->setFrom('southernjadeagency@gmail.com');
     $mail->addAddress($email);//
     $mail->Subject = $subject;//
     $mail->msgHTML($message);//

@@ -4,26 +4,6 @@ include('../../../../dbcon.php');
 include('email.php');
 $success = '';
 
-if(isset($_POST['submit']))
-{
-  $bybtitle = filter_input(INPUT_POST, "bybtitle", FILTER_SANITIZE_SPECIAL_CHARS);
-  $bybdate = filter_input(INPUT_POST, "bybdate", FILTER_SANITIZE_SPECIAL_CHARS); 
-
-  $addsql = 'INSERT INTO bybEvents(byb_title,byb_date) VALUES (?,?)';
-  $stmt = mysqli_prepare($conn, $addsql);
-  mysqli_stmt_bind_param($stmt, 'ss' , $bybtitle,$bybdate);
-  $addresult = mysqli_stmt_execute($stmt);
-
-  if($addresult){
-    $success = '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                  Added Successfully!
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>';
-  }
-}
-
 if(isset($_POST['edit']))
 {
   $edit_title = filter_input(INPUT_POST, "edit_title", FILTER_SANITIZE_SPECIAL_CHARS);
@@ -75,8 +55,6 @@ if(isset($_POST['mass_send'])){
       <?php
   }
 }
-$sql = 'SELECT * FROM bybEvents';
-$result = mysqli_query($conn, $sql);
 
 ?>
 <!DOCTYPE html>
@@ -132,7 +110,7 @@ $result = mysqli_query($conn, $sql);
                         <select type="date" class="form-control" name="searchdate">
                           <option value="" disabled selected>Search Date</option>
                           <?php
-                          $sqldate = "SELECT DISTINCT byb_date FROM bybpreregistration";
+                          $sqldate = "SELECT DISTINCT byb_date FROM bybpreregistration ORDER BY byb_date DESC";
                           $dateresult = mysqli_query($conn, $sqldate);
                           if($dateresult){
                             while($date = mysqli_fetch_assoc($dateresult)){

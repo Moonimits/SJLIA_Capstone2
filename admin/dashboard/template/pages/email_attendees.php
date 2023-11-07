@@ -16,10 +16,10 @@ if(mysqli_num_rows($massresult)>0){
         $lastname = array_pop($fullname);
         $email = $massrow['email'];
         $msg = "
-        Dear $lastname, <br>
+        Dear Mr./Ms. $lastname, <br>
         <br>
 
-        As a participant in the recent BYB event, we are excited to extend an exclusive opportunity to you. Join Southern Jade Life Insurance Agency now for financial security. Click on this link to: <a href='http://localhost:3000/registration/index.php'>register now</a><br><br>
+        As a participant in the recent BYB event, we are excited to extend an exclusive opportunity to you. Join Southern Jade Life Insurance Agency now for financial security. Click on this link to: <a href='southernjade.online/registration'>register now</a><br><br>
         
         If you are already registered, kindly disregard this message.<br><br>
         

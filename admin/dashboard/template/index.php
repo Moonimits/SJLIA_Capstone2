@@ -94,13 +94,15 @@ if(isset($_POST["submit"])){
 
 body {
   position: relative; /* Required for the ::before pseudo-element */
-  background-image: url("../../../all/images/bldg.jpg");
+  background-image: url("../../../images/bldg.jpg");
   background-size: cover;
+  min-height: 100vh; 
 }
 
 body::before {
   content: "";
   position: absolute;
+  height: 100vh; /* Use viewport height for full coverage */
   top: 0;
   left: 0;
   right: 0;

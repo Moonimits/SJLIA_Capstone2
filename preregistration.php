@@ -133,7 +133,7 @@ body::before {
                                             <div class="form-outline mb-4">
                                                 <input type="number" name="contact" id="contact_no"
                                                 value="<?php echo isset($_POST['contact']) ? htmlspecialchars($_POST['contact']) : ''; ?>"    class="form-control" required />
-                                                <label class="form-label" for="contact_no">Contact</label>
+                                                <label class="form-label" for="contact_no">Contact Number</label>
                                             </div>
                                             <div class="form-outline mb-4">
                                                 <input type="text" name="recruite" id="recruite"
