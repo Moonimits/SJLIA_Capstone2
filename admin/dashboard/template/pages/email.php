@@ -15,7 +15,7 @@ function sendEmail($email,$message)
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'southernjadeagency@gmail.com';
-    $mail->Password = 'lcwbmqqtvphjtvf';
+    $mail->Password = 'lcwb mqqt vphj tvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
@@ -68,7 +68,7 @@ function sendManualEmail($email,$message)
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'southernjadeagency@gmail.com';
-    $mail->Password = 'lcwbmqqtvphjtvf';
+    $mail->Password = 'lcwb mqqt vphj tvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
@@ -121,7 +121,7 @@ function sendRegistration($email,$message)
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'southernjadeagency@gmail.com';
-    $mail->Password = 'lcwbmqqtvphjtvf';
+    $mail->Password = 'lcwb mqqt vphj tvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);
@@ -174,7 +174,7 @@ function forgotPassword($email,$message)
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'southernjadeagency@gmail.com';
-    $mail->Password = 'lcwbmqqtvphjtvf';
+    $mail->Password = 'lcwb mqqt vphj tvf';
     $mail->Port = 465;
     $mail->SMTPSecure = 'ssl';
     $mail->isHTML(true);

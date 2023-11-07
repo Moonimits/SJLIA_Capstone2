@@ -134,7 +134,7 @@ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
                                 <!-- loginForm -->
                                 <div class="text-center mb-3">
                                     <div class="container">
-                                        <img src="../../../all/images/logo.png" alt="" class="img-fluid rounded">
+                                        <img src="../../../images/logo.png" alt="" class="img-fluid rounded">
                                     </div>
                                 </div>
 
