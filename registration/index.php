@@ -214,7 +214,7 @@ $crslerror = '';
                       </h3>
                       
                       <p>
-                        <a href='index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+                        <a href='../index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
                       </p>
                     </div>
                   </div>
