@@ -98,10 +98,10 @@ $crslerror = '';
           if ($email == $row['Email']) {
               $emailTaken = true;
           }
-          if ($sss == $row['sss']) {
+          if  (!empty($sss) && $sss == $row['sss']) {
               $sssTaken = true;
           }
-          if ($tin == $row['tin']) {
+          if (!empty($tin) && $tin == $row['tin']) {
               $tinTaken = true;
           }
       }
@@ -135,7 +135,23 @@ $crslerror = '';
           {
                   
             $newImageName = uniqid() . '.' . $imageExtension;
-            if($emailTaken){//so if meron result, may error na email has been taken
+            if(!empty($sss) && strlen($sss) < 10){//so if meron result, may error na email has been taken
+              $error = 
+              '
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              SSS number must be above 10 characters above!
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              ';
+            }elseif(!empty($tin) && strlen($tin) < 9){//so if meron result, may error na sss has been taken
+              $error = 
+              '
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              TIN number must be 9 characters above!
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              ';
+            }elseif($emailTaken){//so if meron result, may error na email has been taken
                 $error = 
                 '
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -198,7 +214,7 @@ $crslerror = '';
                       </h3>
                       
                       <p>
-                        <a href='../all/index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+                        <a href='index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
                       </p>
                     </div>
                   </div>
@@ -310,7 +326,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="firstname" value="<?php echo !empty($_POST['firstname'])? htmlspecialchars($_POST['firstname']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm">
+                <input type="text" name="firstname" value="<?php echo !empty($_POST['firstname'])? htmlspecialchars($_POST['firstname']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm" required>
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Middle Name </label>
@@ -318,7 +334,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="middlename" value="<?php echo !empty($_POST['middlename'])? htmlspecialchars($_POST['middlename']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm">
+                <input type="text" name="middlename" value="<?php echo !empty($_POST['middlename'])? htmlspecialchars($_POST['middlename']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm" required>
               </div>
             </div>
 
@@ -329,7 +345,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="lastname" value="<?php echo !empty($_POST['lastname'])? htmlspecialchars($_POST['lastname']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm">
+                <input type="text" name="lastname" value="<?php echo !empty($_POST['lastname'])? htmlspecialchars($_POST['lastname']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm" required>
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Gender</label>
@@ -353,7 +369,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="date" name="birthday" value="<?php echo !empty($_POST['birthday'])? htmlspecialchars($_POST['birthday']) : ''?>" placeholder="Enter Date of Birth" class="form-control form-control-sm">
+                <input type="date" name="birthday" value="<?php echo !empty($_POST['birthday'])? htmlspecialchars($_POST['birthday']) : ''?>" placeholder="Enter Date of Birth" class="form-control form-control-sm" required>
               </div>
 
 
@@ -363,7 +379,7 @@ $crslerror = '';
                   <span class="indc">:</span>
                </div>
                <div class="col-lg-4 col-md-8">
-                 <input type="text" name="birthplace" value="<?php echo !empty($_POST['birthplace'])? htmlspecialchars($_POST['birthplace']) : ''?>" placeholder="Enter Birth Place" class="form-control form-control-sm">
+                 <input type="text" name="birthplace" value="<?php echo !empty($_POST['birthplace'])? htmlspecialchars($_POST['birthplace']) : ''?>" placeholder="Enter Birth Place" class="form-control form-control-sm" required>
                </div>
             </div>
             <div class="form-row row">
@@ -372,7 +388,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="sss" value="<?php echo !empty($_POST['sss'])? htmlspecialchars($_POST['sss']) : ''?>" placeholder="Enter SSS Number" class="form-control form-control-sm">
+                <input type="number" maxlength="10" name="sss" value="<?php echo !empty($_POST['sss'])? htmlspecialchars($_POST['sss']) : ''?>" placeholder="Enter SSS Number" class="form-control form-control-sm">
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -380,7 +396,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="tin" value="<?php echo !empty($_POST['tin'])? htmlspecialchars($_POST['tin']) : ''?>" placeholder="Enter TIN Number" class="form-control form-control-sm">
+                <input type="number" maxlength="12" name="tin" value="<?php echo !empty($_POST['tin'])? htmlspecialchars($_POST['tin']) : ''?>" placeholder="Enter TIN Number" class="form-control form-control-sm">
               </div>
             </div>
 
@@ -432,7 +448,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="contact" value="<?php echo !empty($_POST['contact'])? htmlspecialchars($_POST['contact']) : ''?>" placeholder="Enter Mobile Numbber" class="form-control form-control-sm">
+                <input type="number" name="contact" value="<?php echo !empty($_POST['contact'])? htmlspecialchars($_POST['contact']) : ''?>" placeholder="Enter Mobile Number" class="form-control form-control-sm" required>
               </div>
 
               <div class="col-lg-2 col-md-4">
@@ -441,7 +457,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="zip" value="<?php echo !empty($_POST['zip'])? htmlspecialchars($_POST['zip']) : ''?>" placeholder="Enter Zip Code" class="form-control form-control-sm">
+                <input type="number" name="zip" value="<?php echo !empty($_POST['zip'])? htmlspecialchars($_POST['zip']) : ''?>" placeholder="Enter Zip Code" class="form-control form-control-sm" required>
               </div>
             </div>
             
@@ -491,7 +507,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="agentname" value="<?php echo !empty($_POST['agentname'])? htmlspecialchars($_POST['agentname']) : ''?>" placeholder="Enter Agent Fullname" class="form-control form-control-sm">
+                <input type="text" name="agentname" value="<?php echo !empty($_POST['agentname'])? htmlspecialchars($_POST['agentname']) : ''?>" placeholder="Enter Agent Fullname" class="form-control form-control-sm" required>
               </div>
             
               
@@ -501,7 +517,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="agentcode" value="<?php echo !empty($_POST['agentcode'])? htmlspecialchars($_POST['agentcode']) : ''?>" placeholder="Enter Agent's Code" class="form-control form-control-sm">
+                <input type="number" name="agentcode" value="<?php echo !empty($_POST['agentcode'])? htmlspecialchars($_POST['agentcode']) : ''?>" placeholder="Enter Agent's Code" class="form-control form-control-sm" required>
               </div>
 
              <div class="form-title row">
@@ -516,7 +532,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="efirst" value="<?php echo !empty($_POST['efirst'])? htmlspecialchars($_POST['efirst']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm">
+                <input type="text" name="efirst" value="<?php echo !empty($_POST['efirst'])? htmlspecialchars($_POST['efirst']) : ''?>" placeholder="Enter First Name" class="form-control form-control-sm" required>
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Middle Name </label>
@@ -524,7 +540,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="emiddle" value="<?php echo !empty($_POST['emiddle'])? htmlspecialchars($_POST['emiddle']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm">
+                <input type="text" name="emiddle" value="<?php echo !empty($_POST['emiddle'])? htmlspecialchars($_POST['emiddle']) : ''?>" placeholder="Enter Middle Name" class="form-control form-control-sm" required>
               </div>
             </div>
 
@@ -535,7 +551,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="elast" value="<?php echo !empty($_POST['elast'])? htmlspecialchars($_POST['elast']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm">
+                <input type="text" name="elast" value="<?php echo !empty($_POST['elast'])? htmlspecialchars($_POST['elast']) : ''?>" placeholder="Enter Last Name" class="form-control form-control-sm" required>
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Relationship</label>
@@ -543,7 +559,7 @@ $crslerror = '';
                 <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="text" name="rel" value="<?php echo !empty($_POST['rel'])? htmlspecialchars($_POST['rel']) : ''?>" placeholder="Enter Relationship to Applicant" class="form-control form-control-sm">
+                <input type="text" name="rel" value="<?php echo !empty($_POST['rel'])? htmlspecialchars($_POST['rel']) : ''?>" placeholder="Enter Relationship to Applicant" class="form-control form-control-sm" required>
               </div>
             </div>
               
@@ -554,7 +570,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="number" name="econtact" value="<?php echo !empty($_POST['econtact'])? htmlspecialchars($_POST['econtact']) : ''?>" placeholder="Enter Contact Numbber" class="form-control form-control-sm">
+                <input type="number" name="econtact" value="<?php echo !empty($_POST['econtact'])? htmlspecialchars($_POST['econtact']) : ''?>" placeholder="Enter Contact Number" class="form-control form-control-sm" required>
               </div>
                <div class="col-lg-2 col-md-4">
                 <label for=""> Address</label>
@@ -562,7 +578,7 @@ $crslerror = '';
                   <span class="indc">:</span>
               </div>
                <div class="col-lg-4 col-md-8">
-                <input type="text" name="eaddress" value="<?php echo !empty($_POST['eaddress'])? htmlspecialchars($_POST['eaddress']) : ''?>" placeholder="Enter Address" class="form-control form-control-sm">
+                <input type="text" name="eaddress" value="<?php echo !empty($_POST['eaddress'])? htmlspecialchars($_POST['eaddress']) : ''?>" placeholder="Enter Address" class="form-control form-control-sm" required>
               </div>
             </div>
 
@@ -612,7 +628,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="email" name="email" value="<?php echo !empty($_POST['email'])? htmlspecialchars($_POST['email']) : ''?>" placeholder="example@gmail.com" class="form-control form-control-sm">
+                <input type="email" name="email" value="<?php echo !empty($_POST['email'])? htmlspecialchars($_POST['email']) : ''?>" placeholder="example@gmail.com" class="form-control form-control-sm" required>
               </div>
               <div class="col-lg-2 col-md-4">
                 <label for="">Password </label>
@@ -620,7 +636,7 @@ $crslerror = '';
                  <span class="indc">:</span>
               </div>
               <div class="col-lg-4 col-md-8">
-                <input type="password" name="password" value="<?php echo !empty($_POST['password'])? htmlspecialchars($_POST['password']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm">
+                <input type="password" name="password" value="<?php echo !empty($_POST['password'])? htmlspecialchars($_POST['password']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm" required>
               </div>
             </div>
 
@@ -632,7 +648,7 @@ $crslerror = '';
               </div>
 
               <div class="col-lg-4 col-md-8">
-                <input type="password" name="cpassword" value="<?php echo !empty($_POST['cpassword'])? htmlspecialchars($_POST['cpassword']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm">
+                <input type="password" name="cpassword" value="<?php echo !empty($_POST['cpassword'])? htmlspecialchars($_POST['cpassword']) : ''?>" placeholder="Enter your password" class="form-control form-control-sm" required>
               </div>
             </div>
 

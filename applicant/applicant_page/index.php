@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(!isset($_SESSION['applicant_id'])){
-  header('Location: ../../all/index.php');
+  header('Location: ../../index.php');
 }
 include('../../dbcon.php');
 $app_id = $_SESSION['applicant_id']; //to be changed by actual login credentials
@@ -572,6 +572,81 @@ if(isset($_POST['changepass'])){
     }
   
 }
+if(isset($_POST['submit_sss'])){
+  $sss = filter_input(INPUT_POST, "sss", FILTER_SANITIZE_SPECIAL_CHARS);
+  $sql = "SELECT * FROM applicantdb";
+  $result = mysqli_query($conn, $sql);
+  $row = mysqli_fetch_assoc($result);
+
+  $sssTaken = false;
+  while ($row = mysqli_fetch_array($result)) {
+    if ($sss == $row['sss']) {
+        $sssTaken = true;
+    }
+  }
+  
+  if($sssTaken){
+    $uploadsuccess = '
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          SSS number already been taken.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+  }elseif(isset($sss) && strlen($sss)<10){
+    $uploadsuccess = '
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          Please enter a valid SSS number with 10 digits.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+  }else{
+    $sql = "UPDATE applicantdb SET sss = '$sss' WHERE application_id = '$app_id'";
+    $result = mysqli_query($conn, $sql);
+    if($result){
+      $uploadsuccess = '
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          SSS number saved!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+    }
+  }
+  
+}
+if(isset($_POST['submit_tin'])){
+  $tin = filter_input(INPUT_POST, "tin", FILTER_SANITIZE_SPECIAL_CHARS);
+  $sql = "SELECT * FROM applicantdb";
+  $result = mysqli_query($conn, $sql);
+
+  $tinTaken = false;
+  while ($row = mysqli_fetch_array($result)) {
+    if ($tin == $row['tin']) {
+        $tinTaken = true;
+    }
+  }
+  
+  if($tinTaken){
+    $uploadsuccess = '
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          TIN number already been taken.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+  }elseif(strlen($tin)<9){
+    $uploadsuccess = '
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          Please enter a valid TIN number with 9-12 digits.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+  }else{
+    $sql = "UPDATE applicantdb SET tin = '$tin' WHERE application_id = '$app_id'";
+    $result = mysqli_query($conn, $sql);
+    if($result){
+      $uploadsuccess = '
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          TIN number saved!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+    }
+  }
+  
+}
 if(isset($_POST['action']) && $_POST['action'] === 'updateNotification'){
   $sql = "UPDATE notification SET is_read = 1 WHERE application_id = '$app_id'";
   $result = mysqli_query($conn, $sql);
@@ -938,7 +1013,7 @@ $userFolder = 'documents/' . $foldername . '/';
                             </div>
                             <div class="col-lg-10">
                               <p><?=$row['Email']?></p>
-                              <p><?=$row['pluk']?></p>
+                              <p><?php echo !empty($row['pluk'])? $row['pluk'] : 'N/A'?></p>
                               <p><?=$row['contact_number']?></p>
                             </div>
                           </div>
@@ -975,6 +1050,16 @@ $userFolder = 'documents/' . $foldername . '/';
                         <div class="text-center bg-light rounded shadow p-3">
                             <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['sss']) ? $userFolder . $docrow['sss'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="sss_proof" class="form-label">Proof of SSS:</label>
+                            <?php
+                            if(empty($row['sss'])){
+                            ?>
+                            <div class="d-flex mb-1">
+                              <input type="number" maxlength="10" name="sss" class="form-control me-2" placeholder="Input your SSS number">
+                              <button type="submit" name="submit_sss" class="btn btn-primary">Submit</button>
+                            </div>
+                            <?php
+                            }
+                            ?>
                             <input type="file" class="form-control" name="sss_proof" id="sss_proof" value="<?php echo $docrow['sss']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="uploadSSS">Upload</button>
                         </div>
@@ -985,6 +1070,16 @@ $userFolder = 'documents/' . $foldername . '/';
                         <div class="text-center bg-light rounded shadow p-3">
                             <img style="height:300px; width: 100%;" src="<?php echo !empty($docrow['tin']) ? $userFolder . $docrow['tin'] : 'documents/default.jpg'; ?>" alt="" class="img-fluid">
                             <label for="tin_proof" class="form-label">Proof of TIN:</label>
+                            <?php
+                            if(empty($row['tin'])){
+                            ?>
+                            <div class="d-flex mb-1">
+                              <input type="number" name="tin" class="form-control me-2" placeholder="Input your TIN number">
+                              <button type="submit" name="submit_tin" class="btn btn-primary">Submit</button>
+                            </div>
+                            <?php
+                            }
+                            ?>
                             <input type="file" class="form-control" name="tin_proof" id="tin_proof" value="<?php echo $docrow['tin']?>" accept="image/*">
                             <button type="submit" class="btn btn-primary mt-2" name="uploadTIN">Upload</button>
                         </div>

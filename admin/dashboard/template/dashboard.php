@@ -203,9 +203,9 @@ if(isset($_POST['mass_send'])){
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo mr-5" href="index.html"><img src="images/logo-topnav.png" class="mr-3"
+                <a class="navbar-brand brand-logo mr-5"><img src="images/logo-topnav.png" class="mr-3"
                         alt="logo" /></a>
-                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logajade.png" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini"><img src="images/logajade.png" alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
                 <button class="navbar-toggler navbar-toggler align-self-center" style="border-width: 0ch;" type="button"
@@ -629,8 +629,8 @@ if(isset($_POST['mass_send'])){
                                                                                     <div class="col-lg-4">
                                                                                         <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $efullname ?> </p>
                                                                                         <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['applicant_rel'] ?></p>
-                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_contact'] ?></p>
                                                                                         <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_address'] ?></p>
+                                                                                        <p style="font-size: 15px;" class="text-dark mb-0"><?php echo $row['agent_contact'] ?></p>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
