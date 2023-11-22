@@ -921,9 +921,12 @@ $userFolder = 'documents/' . $foldername . '/';
 <body>
   <div class="container form-container">
     <div class="col-lg-12 mx-auto login-container">
-      <div class="row form-header">
-        <div class="col-md-3 logocol">
+      <div class="row form-header justify-content-between">
+        <div class="col-3 logocol">
           <img src="assets/images/logo.png" alt="">
+        </div>
+        <div class="col-auto mt-4">
+          <a href="contact.php" class="nav-link text-white btn btn-secondary btn-sm">Contact</a>
         </div>
       </div>
       <div class="col-lg-15 mx-auto profile-container">

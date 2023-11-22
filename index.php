@@ -3,6 +3,10 @@ session_start();
 include("dbcon.php");
 include("admin/dashboard/template/pages/email.php");
 $error = '';
+if(isset($_SESSION['applicant_id'])){
+  header('Location: applicant/applicant_page/index.php');
+}
+
 
 if(isset($_POST["submit"])){
     $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_SPECIAL_CHARS);

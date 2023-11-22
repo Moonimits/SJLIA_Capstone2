@@ -1,7 +1,5 @@
 <?php
 session_start();
-include("dbcon.php");
-include("admin/dashboard/template/pages/email.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,7 +16,7 @@ include("admin/dashboard/template/pages/email.php");
     <!-- MDB -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
 
-    <link href="css/homepage.css" rel="stylesheet" />
+    <link href="../../css/homepage.css" rel="stylesheet" />
 
     <style>
 @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
@@ -28,7 +26,7 @@ include("admin/dashboard/template/pages/email.php");
 
 body {
   position: relative; /* Required for the ::before pseudo-element */
-  background-image: url("images/bldg.jpg");
+  background-image: url("../../images/bldg.jpg");
   background-size: cover;
   font-family: 'Roboto';
 }
@@ -46,10 +44,9 @@ body::before {
     </style>
 <nav class="navbar bg-body-tertiary shadow-none">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-        <img src="images/logo-topnav.png" alt="Logo" width="290" height="55" class="d-inline-block align-text-top">
+        <img src="../../images/logo-topnav.png" alt="Logo" width="290" height="55" class="d-inline-block align-text-top">
         <div class="d-inline" style="margin-right:50px;">
-            <a href="index.php" style="color: azure; margin-right: 30px;">Log In</a>
-            <a href="#" style="color: azure;">About Us</a>
+            <a href="index.php" style="color: azure; margin-right: 30px;">Home</a>
         </div>
     </div>
 </nav>
@@ -80,7 +77,7 @@ body::before {
                 <div class="row">
                     <div class="col text-center">
                         <h3 class="mt-2 text-dark">Pru Life UK - Southern Jade Life Insurance Agency - Batangas City </h3>
-                        <img src="images/pruimage.jpg" class="img-fluid rounded" alt="">
+                        <img src="../../images/pruimage.jpg" class="img-fluid rounded" alt="">
                         <h6 class="mt-3 text-dark">Social:</h6>
                         <div class="d-flex justify-content-center" style="font-size: 50px;">
                             <a href="https://www.facebook.com/southernjade092418.prulifeukbatangascity"><i class="fa-brands fa-facebook" style="color: #1561e5;"></i> Facebook</a>             
