@@ -200,8 +200,13 @@ $crslerror = '';
                 '$gov_emp','$spouse','$newImageName','New Applicant')";
                 $result = mysqli_query($conn, $sql);
 
-                $docusql = "INSERT INTO documents (sss,tin,gov_id,1x1) VALUES ('','','','')";
-                $docusql = mysqli_query($conn, $docusql);
+                $sql = "SELECT * FROM applicantdb WHERE Email = '$email'";
+                $result = mysqli_query($conn, $sql);
+                $row = mysqli_fetch_assoc($result);
+                $appid = $row['application_id'];
+
+                $docusql = "INSERT INTO documents (application_id,sss,tin,gov_id,1x1) VALUES ('$appid','','','','')";
+                $docresult = mysqli_query($conn, $docusql);
                 
                 if($result){
                   ?>

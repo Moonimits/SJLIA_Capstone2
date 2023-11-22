@@ -24,7 +24,13 @@ if(isset($_POST['mass_send'])){
     }elseif($recipients == 2){
         $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
     }elseif($recipients == 3){
-        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' AND applicant_status = 'ICE' AND applicant_status = 'CLR'";
+    }elseif($recipients == 4){
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP'";
+    }elseif($recipients == 5){
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'ICE'";
+    }elseif($recipients == 6){
+        $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'CLR'";
     }else{
         $massemail = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
     }
@@ -753,8 +759,11 @@ if(isset($_POST['mass_send'])){
                                                                         <select class="form-select" name="recipients" aria-label="Default select example" required>
                                                                             <option value="1" selected>All</option>
                                                                             <option value="2">New Applicant</option>
-                                                                            <option value="3">Temporary Agent</option>
-                                                                            <option value="4">Licencsed Agent</option>
+                                                                            <option value="3">Temporary Agent (All)</option>
+                                                                            <option value="4">Temporary Agent (ROP)</option>
+                                                                            <option value="5">Temporary Agent (ICE)</option>
+                                                                            <option value="6">Temporary Agent (CLR)</option>
+                                                                            <option value="7">Licensed Agent</option>
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-lg-12">

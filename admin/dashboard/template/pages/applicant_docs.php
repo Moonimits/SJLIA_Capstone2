@@ -80,6 +80,7 @@ $result = mysqli_query($conn, $sql);
                       }else{
                         while($row = mysqli_fetch_assoc($result)){
                           $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
+
                           $count = 0;
                           $alertsql = "SELECT * FROM documents WHERE application_id = '".$row['application_id']."'";
                           $alertresult = mysqli_query($conn, $alertsql);
@@ -94,6 +95,8 @@ $result = mysqli_query($conn, $sql);
                                 $count =+ 1;
                               }
                               if((!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
+                                $count =+ 1;
+                              }if((!empty($alertrow['rop_cert']) && $row['confirmed_rop'] == 0)){
                                 $count =+ 1;
                               }
                           }
