@@ -4,18 +4,10 @@ $success = '';
 if(isset($_POST['submit'])){
   $edit_id = filter_input(INPUT_POST, "edit_id", FILTER_SANITIZE_SPECIAL_CHARS);
   $uniteam = filter_input(INPUT_POST, "uniteam", FILTER_SANITIZE_SPECIAL_CHARS);
-  $date_exam1 = filter_input(INPUT_POST, "date_exam1", FILTER_SANITIZE_SPECIAL_CHARS);
-  $date_exam2 = filter_input(INPUT_POST, "date_exam2", FILTER_SANITIZE_SPECIAL_CHARS);
-  $on_off1 = filter_input(INPUT_POST, "on_off1", FILTER_SANITIZE_SPECIAL_CHARS);
-  $on_off2 = filter_input(INPUT_POST, "on_off2", FILTER_SANITIZE_SPECIAL_CHARS);
-  $date_payment = filter_input(INPUT_POST, "date_payment", FILTER_SANITIZE_SPECIAL_CHARS);
-  $official_recp = filter_input(INPUT_POST, "official_recp", FILTER_SANITIZE_SPECIAL_CHARS);
-  $exam_result1 = filter_input(INPUT_POST, "exam_result1", FILTER_SANITIZE_SPECIAL_CHARS);
-  $exam_result2 = filter_input(INPUT_POST, "exam_result2", FILTER_SANITIZE_SPECIAL_CHARS);
 
-  $sql = "UPDATE applicantdb SET unit_team = ?, date_exam1 = ?, date_exam2 = ?, on_off1 = ?, on_off2 = ?, date_payment = ?, official_reciept = ?, exam_result1 = ?, exam_result2 = ? WHERE application_id = ? ";
+  $sql = "UPDATE applicantdb SET unit_team = ? WHERE application_id = ? ";
   $stmt = mysqli_prepare($conn, $sql);
-  mysqli_stmt_bind_param($stmt, 'sssiissssi',$uniteam,$date_exam1,$date_exam2,$on_off1,$on_off2,$date_payment,$official_recp,$exam_result1,$exam_result2,$edit_id);
+  mysqli_stmt_bind_param($stmt, 'si',$uniteam, $edit_id);
   $result = mysqli_stmt_execute($stmt);
 
   if($result){
@@ -34,6 +26,89 @@ if(isset($_POST['addunit'])){
     $success = '
     <div class="alert alert-success alert-dismissible fade show" role="alert">
      Unit Team Added!
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
+if(isset($_POST['pass'])){
+  $editid = $_POST['editid'];
+  $examname = $_POST['examname'];
+  $appid = $_POST['appid'];
+  $msg = "Congratulations on Passing the exam for ".$examname."!";
+
+  $sql = "UPDATE exam_history SET exam_result = 1 WHERE exam_id = '$editid'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$msg')";
+  $result = mysqli_query($conn, $sql);
+  if($result){
+    $success = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+     Successfully Graded!
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
+if(isset($_POST['fail'])){
+  $editid = $_POST['editid'];
+  $failtype = $_POST['failtype'];
+  $appid = $_POST['appid'];
+  if($failtype == 2){
+    $msg =  "Unfortunately you did not passed the exam for both Traditional&Variable. You can still retake this exam on the next announcement of schedule.";
+  }elseif($failtype == 3){
+    $msg =  "Unfortunately you did not passed the exam for Variable. You can still retake this exam on the next announcement of schedule.";
+  }if($failtype == 4){
+    $msg =  "Unfortunately you did not passed the exam for Traditional. You can still retake this exam on the next announcement of schedule.";
+  }
+
+
+  $sql = "UPDATE exam_history SET exam_result = '$failtype' WHERE exam_id = '$editid'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$msg')";
+  $result = mysqli_query($conn, $sql);
+  if($result){
+    $success = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+     Successfully Graded!
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
+if(isset($_POST['rpass'])){
+  $editid = $_POST['editid'];
+  $examname = $_POST['examname'];
+  $appid = $_POST['appid'];
+  $msg = "Congratulations on Passing the retake exam for ".$examname."!";
+
+  $sql = "UPDATE exam_history SET exam_result = 6 WHERE exam_id = '$editid'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$msg')";
+  $result = mysqli_query($conn, $sql);
+  if($result){
+    $success = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+     Successfully Graded!
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+}
+if(isset($_POST['rfail'])){
+  $editid = $_POST['editid'];
+  $examname = $_POST['examname'];
+  $appid = $_POST['appid'];
+  $msg = "Unfortunately you did not passed the retake exam ".$examname." You still have a chance to retake this exam on the next announcement of schedule.";
+
+  $sql = "UPDATE exam_history SET exam_result = 5 WHERE exam_id = '$editid'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "INSERT INTO notification(application_id, message) VALUES ('$appid','$msg')";
+  $result = mysqli_query($conn, $sql);
+  if($result){
+    $success = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+     Successfully Graded!
       <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
     </div>';
   }
@@ -69,7 +144,7 @@ if(isset($_POST['addunit'])){
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <?php include('nav.html')?>
+    <?php include('nav.php')?>
     <!-- partial -->
     <div class="main-panel">
       <div class="content-wrapper">
@@ -89,6 +164,9 @@ if(isset($_POST['addunit'])){
                             <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
                             <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
                             <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                            <li><button type="submit" name="rop" class="dropdown-item" href="#">Temporary Agent (ROP)</button></li>
+                            <li><button type="submit" name="ice" class="dropdown-item" href="#">Temporary Agent (ICE)</button></li>
+                            <li><button type="submit" name="clr" class="dropdown-item" href="#">Temporary Agent (CLR)</button></li>
                             <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
                         </ul>
                     </form>
@@ -118,18 +196,24 @@ if(isset($_POST['addunit'])){
                       if(isset($_POST['search'])){
                         $searchitem = $_POST['itemsearch'];
                         if(!empty($searchitem)){
-                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%' ORDER BY lastname ASC, firstname ASC";
                         }else{
-                            $sql = "SELECT * FROM applicantdb";
+                            $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                         }
                       }elseif(isset($_POST['newapp'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant' ORDER BY lastname ASC, firstname ASC";
                       }elseif(isset($_POST['tempagent'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' OR applicant_status = 'ICE' OR applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
+                      }elseif(isset($_POST['rop'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' ORDER BY lastname ASC, firstname ASC";
+                      }elseif(isset($_POST['ice'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ICE' ORDER BY lastname ASC, firstname ASC";
+                      }elseif(isset($_POST['clr'])){
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
                       }elseif(isset($_POST['licagent'])){
-                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                          $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent' ORDER BY lastname ASC, firstname ASC";
                       }else{
-                          $sql = "SELECT * FROM applicantdb";
+                          $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                       }
                       
                       $result = mysqli_query($conn, $sql);
@@ -188,20 +272,24 @@ if(isset($_POST['addunit'])){
                                   }
 
                           ?>
-                              <div class="row justify-content-center border-bottom border-secondary py-2">
-                                  <div class="col-lg-2 p-0">
-                                    <p style="font-size: 13px;" class="mb-0"><b>Name: </b></p>
+                              <div class="row justify-content-evenly border-bottom border-secondary py-2">
+                                  <div class="col-lg-auto">
+                                    <p style="font-size: 13px;" class="mb-0"><b>Applicant Name: </b></p>
                                     <p style="font-size: 13px;" class="mb-0"><b>Application ID: </b></p>
+                                  </div>
+                                  <div class="col-lg-2">
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $fullname ?></p>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['plukapplication_id']>0 ? $row['plukapplication_id'] : 'N/A' ?></p>
+                                  </div>
+                                  <div class="col-lg-auto">
                                     <p style="font-size: 13px;" class="mb-0"><b>Join Pru Account: </b></p>
                                     <p style="font-size: 13px;" class="mb-0"><b>Documents: </b></p>
                                   </div>
-                                  <div class="col-lg-2 p-0">
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $fullname ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['plukapplication_id'] ?></p>
+                                  <div class="col-lg-2">
                                     <p style="font-size: 14px;" class="mb-0 <?=$joinclass?>"><?php echo $joinpru ?></p>
-                                    <?php echo $document?>
+                                    <p style="font-size: 14px;" class="mb-0"><?php echo $document?></p>
                                   </div>
-                                  <div class="col-lg-1">
+                                  <div class="col-lg-auto">
                                     <p style="font-size: 13px;" class="mb-0"><b>Unit Team: </b></p>
                                     <p style="font-size: 13px;" class="mb-0"><b>Recruiter: </b></p>
                                   </div>
@@ -209,37 +297,16 @@ if(isset($_POST['addunit'])){
                                     <p style="font-size: 14px;" class="mb-0"><?php echo !empty($row['unit_team']) ? $row['unit_team'] : 'N/A' ?></p>
                                     <p style="font-size: 14px;" class="mb-0"><?php echo $row['recruiter_name'] ?></p>
                                   </div>
-                                  <div class="col-lg-2">
-                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Variable Exam: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Traditional Exam: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Variable of Exam: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Traditional of Exam: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Date of Payment: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Official Receipt: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Variable Exam Result: </b></p>
-                                    <p style="font-size: 13px;" class="mb-0"><b>Traditional Exam Result: </b></p>
-                                  </div>
-                                  <div class="col-lg-3">
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_exam1'] ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_exam2'] ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $on_or_off1 ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $on_or_off2 ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['date_payment'] ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['official_reciept'] ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['exam_result1'] ?></p>
-                                    <p style="font-size: 14px;" class="mb-0"><?php echo $row['exam_result2'] ?></p>
-                                  </div>
-                                  <div class="row justify-content-end">
-                                    <div class="col-lg-1">
-                                      <button class="btn btn-success" data-toggle="modal" data-target="#modal<?=$row['application_id']?>">Edit</button>
-                                    </div>
+                                  <div class="col-lg-2 text-right">
+                                    <button class="btn btn-success" data-toggle="modal" data-target="#modal<?=$row['application_id']?>">Edit</button>
+                                    <button class="btn btn-primary" data-toggle="modal" data-target="#exam<?=$row['application_id']?>">Exam</button>
                                   </div>
                               </div>
                               <!-- Modal -->
 
                               <form method="post">
                                 <div class="modal fade" id="modal<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-xl">
+                                    <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="exampleModalLabel">Other Information</h5>
@@ -247,7 +314,7 @@ if(isset($_POST['addunit'])){
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
-                                                  <div class="col-lg-6">
+                                                  <div class="col-lg-12">
                                                     <input type="text" name="edit_id" class="d-none" value="<?=$row['application_id']?>">
                                                     <div class="form-group">
                                                       <label for="uniteam">Unit Team:</label>
@@ -265,64 +332,6 @@ if(isset($_POST['addunit'])){
                                                         ?>
                                                       </select>
                                                     </div>
-                                                    <div class="form-group">
-                                                      <div class="row">
-                                                        <div class="col">
-                                                          <label for="date_exam">Date of Variable Exam:</label>
-                                                          <input type="date" name="date_exam1" class="form-control" id="date_exam" placeholder="Enter date of exam" value="<?=$row['date_exam1']?>">
-                                                        </div>
-                                                        <div class="col">
-                                                          <label for="date_exam2">Date of Traditional Exam:</label>
-                                                          <input type="date" name="date_exam2" class="form-control" id="date_exam" placeholder="Enter date of exam" value="<?=$row['date_exam2']?>">
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                      <label for="type_exam">Variable Exam:</label>
-                                                      <div class="d-flex">
-                                                        <select name="on_off1" class="form-control text-dark" id="on_off">
-                                                          <option class="text-success" value="<?=$row['on_off1']?>" selected><?php if($row['on_off1']==0){echo "Online / Offsite"; }elseif($row['on_off1']==1){echo "Offsite";}else{ echo "Online";} ?></option>
-                                                          <option value="2">Online</option>
-                                                          <option value="1">Offsite</option>
-                                                        </select>
-                                                      </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                      <label for="type_exam">Traditional Exam:</label>
-                                                      <div class="d-flex">
-                                                        <select name="on_off2" class="form-control text-dark" id="on_off">
-                                                          <option class="text-success" value="<?=$row['on_off2']?>" selected><?php if($row['on_off2']==0){echo "Online / Offsite"; }elseif($row['on_off2']==1){echo "Offsite";}else{ echo "Online";} ?></option>
-                                                          <option value="2">Online</option>
-                                                          <option value="1">Offsite</option>
-                                                        </select>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                      <label for="date_payment">Date of Payment:</label>
-                                                      <input type="date" name="date_payment" class="form-control" id="date_payment" placeholder="Enter date of payment" value="<?=$row['date_payment']?>">
-                                                    </div>
-                                                    <div class="form-group">
-                                                      <label for="official_recp">Official Receipt:</label>
-                                                      <input type="text" name="official_recp" class="form-control" id="official_recp" placeholder="Enter Official Receipt" value="<?=$row['official_reciept']?>">
-                                                    </div>
-                                                    <div class="form-group">
-                                                      <label for="exam_result">Variable Exam Result:</label>
-                                                      <select name="exam_result1" class="form-control text-dark" id="exam_result" value="<?=$row['exam_result1']?>">
-                                                        <option class="text-success" value="<?=$row['exam_result1']?>" selected><?php if(empty($row['exam_result1'])){echo "Select an Option"; }elseif($row['exam_result1']=='PASSED'){echo "PASSED";}else{ echo "FAILED";} ?></option>
-                                                        <option value="PASSED">PASSED</option>
-                                                        <option value="FAILED">FAILED</option>
-                                                      </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                      <label for="exam_result">Traditional Exam Result:</label>
-                                                      <select name="exam_result2" class="form-control text-dark" id="exam_result" value="<?=$row['exam_result2']?>">
-                                                        <option class="text-success" value="<?=$row['exam_result2']?>" selected><?php if(empty($row['exam_result2'])){echo "Select an Option"; }elseif($row['exam_result2']=='PASSED'){echo "PASSED";}else{ echo "FAILED";} ?></option>
-                                                        <option value="PASSED">PASSED</option>
-                                                        <option value="FAILED">FAILED</option>
-                                                      </select>
-                                                    </div>
                                                   </div>
                                                 </div>
                                             </div>
@@ -330,6 +339,129 @@ if(isset($_POST['addunit'])){
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                 <button type="button" data-dismiss="modal" class="btn btn-primary" data-toggle="modal" data-target="#uniteams">Unit Team</button>
                                                 <button type="submit" name="submit" class="btn btn-success">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              </form>
+                              <form method="post">
+                                <div class="modal fade" id="exam<?php echo $row['application_id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Exam History</h5>
+                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                  <div class="col-12">
+                                                    <div class="table-responsive text-center">
+                                                      <table class="table table-bordered table hover" style="width: 100%">
+                                                        <thead>
+                                                            <tr class="bg-success">
+                                                              <th>#</th>
+                                                              <th>Exam Name</th>
+                                                              <th>Exam Place</th>
+                                                              <th>Exam Date</th>
+                                                              <th>Payment Date</th>
+                                                              <th>Official Receipt</th>
+                                                              <th>Exam Type</th>
+                                                              <th>Result</th>
+                                                              <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                          <?php
+                                                          $esql = "SELECT * FROM exam_history WHERE application_id = '".$row['application_id']."'";
+                                                          $eresult = mysqli_query($conn, $esql);
+                                                          if(!mysqli_num_rows($eresult)>0){
+                                                            echo '<td colspan="11"><center>No Exam Records</center></td>';
+                                                          }else{
+                                                            $count = 1;
+                                                            while($erow = mysqli_fetch_assoc($eresult)){
+                                                              if($erow['exam_result']==0){
+                                                                $examresult = 'N/A';
+                                                              }elseif($erow['exam_result']==1){
+                                                                $examresult = '
+                                                                <p class="text-success m-0" style="font-size: 10px; font-weight:bold;">Traditional (PASSED)</p>
+                                                                <p class="text-success m-0" style="font-size: 10px; font-weight:bold;">Variable (PASSED)</p>
+                                                                ';
+                                                              }elseif($erow['exam_result']==2){
+                                                                $examresult = '
+                                                                <p class="text-danger m-0" style="font-size: 10px; font-weight:bold;">Traditional (FAILED)</p>
+                                                                <p class="text-danger m-0" style="font-size: 10px; font-weight:bold;">Variable (FAILED)</p>
+                                                                ';
+                                                              }elseif($erow['exam_result']==3){
+                                                                $examresult = '
+                                                                <p class="text-success m-0" style="font-size: 10px; font-weight:bold;">Traditional (PASSED)</p>
+                                                                <p class="text-danger m-0" style="font-size: 10px; font-weight:bold;">Variable (FAILED)</p>
+                                                                ';
+                                                              }elseif($erow['exam_result']==4){
+                                                                $examresult = '
+                                                                <p class="text-danger m-0" style="font-size: 10px; font-weight:bold;">Traditional (FAILED)</p>
+                                                                <p class="text-success m-0" style="font-size: 10px; font-weight:bold;">Variable (PASSED)</p>
+                                                                ';
+                                                              }elseif($erow['exam_result']==5){
+                                                                $examresult = ' <p class="text-danger m-0" style="font-size: 10px; font-weight:bold;">FAILED</p>';
+                                                              }elseif($erow['exam_result']==6){
+                                                                $examresult = ' <p class="text-success m-0" style="font-size: 10px; font-weight:bold;">PASSED</p>';
+                                                              }
+                                                              ?>
+                                                              <tr>
+                                                                <td><?=$count?></td>
+                                                                <td><?=$erow['exam_name']?></td>
+                                                                <td><?php echo !empty($erow['exam_place']) ? $erow['exam_place'] : 'N/A'?></td>
+                                                                <td><?=$erow['exam_date']?></td>
+                                                                <td><?=$erow['payment_date']?></td>
+                                                                <td><?=$erow['official_receipt']?></td>
+                                                                <td><?=$erow['exam_type']?></td>
+                                                                <td><?=$examresult?></td>
+
+                                                                <form method="post">
+                                                                <input class="d-none" name="editid" type="text" value="<?=$erow['exam_id']?>">
+                                                                <input class="d-none" name="examname" type="text" value="<?=$erow['exam_name']?>">
+                                                                <input class="d-none" name="appid" type="text" value="<?=$erow['application_id']?>">
+                                                                <td>
+                                                                  <?php
+                                                                  if($erow['exam_result']==0){
+                                                                    if(html_entity_decode($erow['exam_name']) == 'Traditional&Variable'){
+                                                                      ?>
+                                                                        <button name="pass" class="btn btn-success btn-sm">Passed</button>
+                                                                        <select name="failtype">
+                                                                          <option value="2" selected>Both</option>
+                                                                          <option value="3">Variable</option>
+                                                                          <option value="4">Traditional</option>
+                                                                        </select>
+                                                                        <button name="fail" class="btn btn-danger btn-sm">Failed</button>
+                                                                      <?php
+                                                                    }else{
+                                                                      ?>
+                                                                      <button name="rpass" class="btn btn-success btn-sm">Passed</button>
+                                                                      <button name="rfail" class="btn btn-danger btn-sm">Failed</button>
+                                                                      <?php
+                                                                    }
+                                                                  }else{
+                                                                    ?>
+                                                                    <p class="text-success m-0">GRADED</p>
+                                                                    <?php
+                                                                  }
+                                                                  ?>
+                                                                </td>
+                                                                </form>
+                                                              </tr>
+                                                              <?php
+                                                              $count++;
+                                                            }
+                                                          }
+                                                          ?>
+                                                        </tbody>
+                                                      </table>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
                                     </div>
@@ -393,7 +525,6 @@ if(isset($_POST['addunit'])){
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary">Save changes</button>
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
               </div>

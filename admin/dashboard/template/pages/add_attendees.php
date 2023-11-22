@@ -102,7 +102,7 @@ $result = mysqli_query($conn, $sql);
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <?php include('nav.html')?>
+    <?php include('nav.php')?>
     <!-- partial -->
       <!-- partial -->
       <div class="main-panel">

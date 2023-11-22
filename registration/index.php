@@ -139,7 +139,7 @@ $crslerror = '';
               $error = 
               '
               <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              SSS number must be above 10 characters above!
+              SSS number must be above 10 characters!
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
               ';

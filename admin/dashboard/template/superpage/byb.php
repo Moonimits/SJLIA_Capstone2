@@ -92,10 +92,10 @@ $result = mysqli_query($conn, $sql);
                                 
                                 $sql = "SELECT * FROM bybpreregistration WHERE byb_date = '$searchdate'";
                               }else{
-                                $sql = "SELECT * FROM bybpreregistration";
+                                $sql = "SELECT * FROM bybpreregistration ORDER BY byb_date DESC";
                               }
                             }else{
-                              $sql = "SELECT * FROM bybpreregistration";
+                              $sql = "SELECT * FROM bybpreregistration ORDER BY byb_date DESC";
                             }
                             $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){

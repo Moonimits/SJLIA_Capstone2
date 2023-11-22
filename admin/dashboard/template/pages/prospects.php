@@ -63,7 +63,7 @@ $result = mysqli_query($conn, $sql);
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <?php include('nav.html')?>
+    <?php include('nav.php')?>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -105,10 +105,10 @@ $result = mysqli_query($conn, $sql);
                               if(!empty($searchitem)){
                                   $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '$searchitem'";
                               }else{
-                                  $sql = "SELECT * FROM applicantdb";
+                                  $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0 ORDER BY lastname ASC, firstname ASC";
                               }
                             }else{
-                                $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0";
+                                $sql = "SELECT * FROM applicantdb WHERE has_pruaccount = 0 ORDER BY lastname ASC, firstname ASC";
                             }
                             $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){

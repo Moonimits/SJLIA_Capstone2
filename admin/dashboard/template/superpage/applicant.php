@@ -5,10 +5,10 @@ if(isset($_POST['search'])){
     if(!empty($searchitem)){
         $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
     }else{
-        $sql = "SELECT * FROM applicantdb";
+        $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
     }
 }else{
-    $sql = "SELECT * FROM applicantdb";
+    $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
 }
 $result = mysqli_query($conn, $sql);
 ?>
@@ -153,6 +153,15 @@ $result = mysqli_query($conn, $sql);
     .current-item .progress-count {
         color: #21d4fd;
     }
+    .badge-rop{
+        background-color: #EDFF00;
+    }
+    .badge-ice{
+        background-color: #1A99F8;
+    }
+    .badge-clr{
+        background-color: #2EEAB2;
+    }
 </style>
 
 <body>
@@ -196,16 +205,18 @@ $result = mysqli_query($conn, $sql);
                                                                     $status = 'New Applicant';
                                                                 }elseif($completion >= 1 && $completion <= 3){
                                                                     $statusClass = 'badge badge-pill badge-warning';
-                                                                    if($row['confirmed_elicense'] == 1){
-                                                                        $status = 'Temporary Agent (CLR)';                                            
-                                                                    }elseif($row['confirmed_documents'] == 1){
-                                                                        $status = 'Temporary Agent (ICE)';                                            
-                                                                    }elseif($row['confirmed_rop'] == 1){
-                                                                        $status = 'Temporary Agent (ROP)';                                            
-                                                                    }
+                                                                    $status = 'Temporary Agent';                                            
                                                                 }elseif($completion == 4){
                                                                     $statusClass = 'badge badge-pill badge-success';
                                                                     $status = 'Licensed Agent';
+                                                                }
+
+                                                                if($row['applicant_status'] == 'ROP'){
+                                                                    $apstat = 'badge badge-pill badge-rop';
+                                                                }elseif($row['applicant_status'] == 'ICE'){
+                                                                    $apstat = 'badge badge-pill badge-ice';
+                                                                }elseif($row['applicant_status'] == 'CLR'){
+                                                                    $apstat = 'badge badge-pill badge-clr';
                                                                 }
                                                         ?>
                                                             <div class="row justify-content-center border-bottom border-secondary">
@@ -213,8 +224,15 @@ $result = mysqli_query($conn, $sql);
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Name:</p>
                                                                     <p style="font-size: 15px;" class="text-dark"><strong><?php echo $fullname ?></strong></p>
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Status:</p>
-                                                                    <div>
-                                                                        <p style="font-size: 12px;" class="<?= $statusClass?>"><?= $status?></p>
+                                                                    <div class="text-center">
+                                                                        <p style="font-size: 12px;" class="<?= $statusClass?> mb-0"><?=$status?></p>
+                                                                        <?php
+                                                                        if($completion >= 1 && $completion <= 3){
+                                                                            ?>
+                                                                            <p style="font-size: 12px;" class="<?= $apstat?> m-0"><?=$row['applicant_status']?></p>
+                                                                            <?php
+                                                                        }
+                                                                        ?>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-lg-10 pt-2">

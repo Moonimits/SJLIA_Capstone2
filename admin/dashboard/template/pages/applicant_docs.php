@@ -37,7 +37,7 @@ $result = mysqli_query($conn, $sql);
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-      <?php include('nav.html') ?>
+      <?php include('nav.php') ?>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -67,10 +67,10 @@ $result = mysqli_query($conn, $sql);
                         if(!empty($searchitem)){
                             $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
                         }else{
-                            $sql = "SELECT * FROM applicantdb";
+                            $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                         }
                       }else{
-                          $sql = "SELECT * FROM applicantdb";
+                          $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                       }
                       $result = mysqli_query($conn, $sql);
                       if(!mysqli_num_rows($result)>0){
@@ -80,11 +80,29 @@ $result = mysqli_query($conn, $sql);
                       }else{
                         while($row = mysqli_fetch_assoc($result)){
                           $fullname = $row['Lastname'] . ', ' . $row['Firstname'] . ' ' . $row['Middlename'][0] . '.';
+                          $count = 0;
+                          $alertsql = "SELECT * FROM documents WHERE application_id = '".$row['application_id']."'";
+                          $alertresult = mysqli_query($conn, $alertsql);
+                          while($alertrow = mysqli_fetch_array($alertresult)){
+                              if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)){
+                                $count =+ 1;
+                              }
+                              if((!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)){
+                                $count =+ 1;
+                              }
+                              if((!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)){
+                                $count =+ 1;
+                              }
+                              if((!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
+                                $count =+ 1;
+                              }
+                          }
                           ?>
+                          
                           <div class="col-lg-4 mt-2 bg-white" >
                             <button type="button" style="height: auto; width: 100%" class="btn btn-outline-success btn-lg shadow" data-toggle="modal" data-target="#documents<?=$row['application_id']?>">
                               <strong><?=$fullname?></strong> 
-                            </button>
+                            <?php echo $count > 0? '<span class="badge badge-danger">'.$count.'</span>' : ''?></button>
 
                             <form method="post">
                             <div class="modal fade" id="documents<?=$row['application_id']?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

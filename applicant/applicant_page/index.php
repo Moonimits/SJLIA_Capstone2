@@ -651,6 +651,82 @@ if(isset($_POST['action']) && $_POST['action'] === 'updateNotification'){
   $sql = "UPDATE notification SET is_read = 1 WHERE application_id = '$app_id'";
   $result = mysqli_query($conn, $sql);
 }
+if(isset($_POST['retake'])){
+  $examname = filter_input(INPUT_POST, "examname", FILTER_SANITIZE_SPECIAL_CHARS);
+  $examtype = filter_input(INPUT_POST, "examtype", FILTER_SANITIZE_SPECIAL_CHARS)."(Retake)";
+  $offrecp = filter_input(INPUT_POST, "offrecp", FILTER_SANITIZE_SPECIAL_CHARS);
+  $paydate = filter_input(INPUT_POST, "paydate", FILTER_SANITIZE_SPECIAL_CHARS);
+  $isretake = 1;
+  $examresult = '';
+  $examplace = 'N/A';
+  if($examtype == 'online'){
+    $examdate = filter_input(INPUT_POST, "examdate", FILTER_SANITIZE_SPECIAL_CHARS);
+  }else{
+    $examdate = filter_input(INPUT_POST, "examdate", FILTER_SANITIZE_SPECIAL_CHARS);
+    $examplace = filter_input(INPUT_POST, "examplace", FILTER_SANITIZE_SPECIAL_CHARS);
+  }
+
+  $sql = "UPDATE exam_history SET is_retake = '$isretake' WHERE application_id = '$app_id' AND exam_id = '".$_SESSION['exam_id']."'";
+  $result = mysqli_query($conn, $sql);
+
+  $sql = "INSERT INTO exam_history(application_id,exam_name,exam_place,exam_date,exam_result,exam_type,payment_date,official_receipt) VALUES (?,?,?,?,?,?,?,?)";
+  $stmt = mysqli_prepare($conn, $sql);
+  mysqli_stmt_bind_param($stmt, 'isssssss', $app_id,$examname,$examplace,$examdate,$examresult,$examtype,$paydate,$offrecp);
+  $result = mysqli_stmt_execute($stmt);
+  if($result){
+      ?>
+      <link rel="stylesheet" href="../../registration/popup_style.css">
+      <div class="popup popup--icon -success js_success-popup popup--visible">
+        <div class="popup__background"></div>
+        <div class="popup__content">
+          <h3 class="popup__content__title">
+            Retake Registered!
+          </h3>
+          <p>
+            <a href='index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+          </p>
+        </div>
+      </div>
+      <?php
+  }
+
+}
+if(isset($_POST['register_exam'])){
+  $examname = filter_input(INPUT_POST, "examname", FILTER_SANITIZE_SPECIAL_CHARS);
+  $examtype = filter_input(INPUT_POST, "examtype", FILTER_SANITIZE_SPECIAL_CHARS);
+  $offrecp = filter_input(INPUT_POST, "offrecp", FILTER_SANITIZE_SPECIAL_CHARS);
+  $paydate = filter_input(INPUT_POST, "paydate", FILTER_SANITIZE_SPECIAL_CHARS);
+  $examresult = '';
+  $examplace = 'N/A';
+  if($examtype == 'online'){
+    $examdate = filter_input(INPUT_POST, "examdate", FILTER_SANITIZE_SPECIAL_CHARS);
+  }else{
+    $examdate = filter_input(INPUT_POST, "examdate", FILTER_SANITIZE_SPECIAL_CHARS);
+    $examplace = filter_input(INPUT_POST, "examplace", FILTER_SANITIZE_SPECIAL_CHARS);
+  }
+
+  $sql = "INSERT INTO exam_history(application_id,exam_name,exam_place,exam_date,exam_result,exam_type,payment_date,official_receipt) VALUES (?,?,?,?,?,?,?,?)";
+  $stmt = mysqli_prepare($conn, $sql);
+  mysqli_stmt_bind_param($stmt, 'isssssss', $app_id,$examname,$examplace,$examdate,$examresult,$examtype,$paydate,$offrecp);
+  $result = mysqli_stmt_execute($stmt);
+  if($result){
+      ?>
+      <link rel="stylesheet" href="../../registration/popup_style.css">
+      <div class="popup popup--icon -success js_success-popup popup--visible">
+        <div class="popup__background"></div>
+        <div class="popup__content">
+          <h3 class="popup__content__title">
+            Exam Registered!
+          </h3>
+          <p>
+            <a href='index.php'><button class="button button--success" data-for="js_success-popup">OK</button></a>
+          </p>
+        </div>
+      </div>
+      <?php
+  }
+
+}
 
 $sql = "SELECT * FROM applicantdb WHERE application_id = '$app_id'";
 $result = mysqli_query($conn, $sql);
@@ -677,6 +753,7 @@ if($completion == 0){
   $statusClass = 'badge rounded-pill bg-success';
   $status = 'Licensed Agent';
 }
+
 
 $dateInWords = date('F d Y', strtotime($row['birthdate']));
 
@@ -951,6 +1028,7 @@ $userFolder = 'documents/' . $foldername . '/';
                 $notifresult = mysqli_query($conn, $notifsql);
                 $numrow = mysqli_num_rows($notifresult);
                 ?>
+                <li><a data-bs-toggle="tab" class="nav-link" href="#exam" style="font-weight:lighter; font-size:125%;">Exams</a></li>
                 <li><a data-bs-toggle="tab" class="nav-link position-relative" href="#notif" onclick="updateNotification()" style="font-weight:lighter; font-size:125%;">Notifications <span id="notifbadge"><?php echo $numrow != 0 ? '<span style="font-size: 10px;" class="position-absolute  badge rounded-pill bg-danger mb-3">' .$numrow. '</span>' : '';?></span></a></li>
             </ul>
             <div class="tab-content">
@@ -1031,8 +1109,7 @@ $userFolder = 'documents/' . $foldername . '/';
                           </div>
                         </div>
 
-                      
-                        
+
                       </div>
                   </div>
               </div>
@@ -1145,6 +1222,97 @@ $userFolder = 'documents/' . $foldername . '/';
                       }
                       ?>
                     </div>
+                  </div>
+                </div>
+              </div>
+              <div id="exam" class="tab-pane fade">
+                <div class="card border border-success border-3 rounded-4 mb-4">
+                  <div class="d-flex card-header bg-transparent border-success justify-content-between align-items-center">
+                      <div style="font-size: 25px;"><strong>Exams</strong></div>
+                  </div>
+                  <div class="card-body pt-0" style="height: 10%;">
+                  <?php
+                  $norec = false;
+                  $esql = "SELECT * FROM exam_history WHERE application_id = '$app_id'";
+                  $eresult = mysqli_query($conn, $esql);
+                  if(!mysqli_num_rows($eresult)>0){
+                    echo 'No Exam records yet';
+                    $norec = true;
+                  }else{
+                    while($erow = mysqli_fetch_assoc($eresult)){
+                      if($erow['exam_result']==0){
+                        $examresult = 'N/A';
+                      }elseif($erow['exam_result']==1){
+                        $examresult = '
+                        <div class="d-flex flex-column">
+                        <p class="text-success m-0" style="font-size: 13px; font-weight:bold;">Traditional (PASSED)</p>
+                        <p class="text-success m-0" style="font-size: 13px; font-weight:bold;">Variable (PASSED)</p>
+                        </div>';
+                      }elseif($erow['exam_result']==2){
+                        $examresult = '
+                        <div class="d-flex flex-column">
+                        <p class="text-danger m-0" style="font-size: 13px; font-weight:bold;">Traditional (FAILED)</p>
+                        <p class="text-danger m-0" style="font-size: 13px; font-weight:bold;">Variable (FAILED)</p>
+                        </div>';
+                      }elseif($erow['exam_result']==3){
+                        $examresult = '
+                        <div class="d-flex flex-column">
+                        <p class="text-success m-0" style="font-size: 13px; font-weight:bold;">Traditional (PASSED)</p>
+                        <p class="text-danger m-0" style="font-size: 13px; font-weight:bold;">Variable (FAILED)</p>
+                        </div>';
+                      }elseif($erow['exam_result']==4){
+                        $examresult = '
+                        <div class="d-flex flex-column">
+                        <p class="text-danger m-0" style="font-size: 13px; font-weight:bold;">Traditional (FAILED)</p>
+                        <p class="text-success m-0" style="font-size: 13px; font-weight:bold;">Variable (PASSED)</p>
+                        </div>';
+                      }elseif($erow['exam_result']==5){
+                        $examresult = ' <p class="text-danger " style="font-size: 13px; font-weight:bold;">FAILED</p>';
+                      }elseif($erow['exam_result']==6){
+                        $examresult = ' <p class="text-success " style="font-size: 13px; font-weight:bold;">PASSED</p>';
+                      }
+                      $res = $erow['exam_result'];
+                      $_SESSION['exam_id'] = $erow['exam_id'];
+                      ?>
+                      <div class="row border-bottom border-secondary pt-3">
+                        <div class="col-auto">
+                          <p><b>Exam Place: </b></p>
+                          <p><b>Date of Exam: </b></p>
+                        </div>
+                        <div class="col">
+                          <p><?php echo !empty($erow['exam_place'])? $erow['exam_place'] : 'N/A'?></p>
+                          <p><?=$erow['exam_date']?></p>
+                        </div>
+                        <div class="col-auto">
+                          <p><b>Date of Payment: </b></p>
+                          <p><b>Official Receipt: </b></p>
+                        </div>
+                        <div class="col">
+                          <p><?=$erow['payment_date']?></p>
+                          <p><?=$erow['official_receipt']?></p>
+                        </div>
+                        <div class="col-auto">
+                          <p><b>Exam: </b></p>
+                          <p><b>Result: </b></p>
+                        </div>
+                        <div class="col">
+                          <p><?=$erow['exam_name']?>(<?=$erow['exam_type']?>)</p>
+                          <div class="d-flex">
+                            <p><?php echo $examresult?></p>
+                            <?php
+                            if($erow['is_retake'] == 0 && $erow['exam_result'] > 1 && $erow['exam_result'] < 6 && isset($_SESSION['post_id'])){
+                              ?>
+                              <button type="button" class="btn btn-primary btn-sm m-1 mb-3" data-bs-toggle="modal" data-bs-target="#examAnn<?=$_SESSION['post_id']?>">Retake</button>
+                              <?php
+                            }
+                            ?>
+                          </div>
+                        </div>
+                      </div>
+                      <?php
+                    }
+                  }
+                  ?>
                   </div>
                 </div>
               </div>
@@ -1330,6 +1498,140 @@ $userFolder = 'documents/' . $foldername . '/';
         </div>
       </form>
 
+  <!-- Exam -->
+  <?php
+    $examsql = "SELECT * FROM exam";
+    $examresult = mysqli_query($conn, $examsql);
+    while($examrow = mysqli_fetch_assoc($examresult)){
+      if($c < $examrow['expire_date'] && ($norec || (isset($res) && $res > 1 && $res < 6))){
+        $_SESSION['post_id'] = $examrow['post_id'];
+        ?>
+        <form method="post">
+          <div class="modal fade" tabindex="-1" id="examAnn<?=$examrow['post_id']?>">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Exam Announcement</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <?php
+                      $count = 1;
+                      $galsql = "SELECT * FROM exam_gallery WHERE post_id = '".$examrow['post_id']."'";
+                      $galresult = mysqli_query($conn, $galsql);
+                      if(!mysqli_num_rows($galresult)>0){
+                        echo 'No Images Yet';
+                      }else{
+                        while($galrow = mysqli_fetch_assoc($galresult)){
+                          if($count == 1){
+                            ?>
+                             <div class="carousel-item active" data-bs-interval="10000">
+                              <img src="../../admin/dashboard/template/pages/exam_photo/<?=$galrow['photo']?>" class="d-block w-100" alt="...">
+                             </div>
+                            <?php
+                          }else{
+                          ?>
+                            <div class="carousel-item" data-bs-interval="10000">
+                              <img src="../../admin/dashboard/template/pages/exam_photo/<?=$galrow['photo']?>" class="d-block w-100" alt="...">
+                            </div>
+                          <?php
+                          }
+                          $count++;
+                        }
+                      }
+                      ?>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-5">
+                      <label for="formFile" class="form-label">Exam Type:</label>
+                      <div class="d-flex">
+                        <div class="form-check me-2">
+                          <input class="form-check-input" type="radio" name="examtype" id="examtype1" value="offsite" required>Offsite
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="examtype" id="examtype2" value="online" required>Online
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-7">
+                      <div class="mb-3">
+                        <label for="examname" class="form-label">Exam Name:</label>
+                        <select class="form-select" name="examname" aria-label="Default select example" required>
+                          <option value="Traditional&Variable" selected>Traditional&Variable</option>
+                          <?php
+                          if(isset($res) && $res > 1){
+                            ?>
+                            <option value="Variable">Variable</option>
+                            <option value="Traditional">Traditional</option>
+                            <?php
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="paydate" class="form-label">Payment Date:</label>
+                    <input type="date" name="paydate" class="form-control" id="paydate" placeholder="Enter Payment Date"required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="offrecp" class="form-label">Official Receipt:</label>
+                    <input type="text" name="offrecp" class="form-control" id="offrecp" placeholder="Enter Official Receipt #" required>
+                  </div>
+                  <div class="mb-3" id="examPlaceContainer">
+                    <label for="examplace" class="form-label">Exam Place:</label>
+                    <input type="text" name="examplace" class="form-control" id="examplace" placeholder="Enter Exam Place">
+                  </div>
+                  <div class="mb-3" id="examDateContainer">
+                    <label for="examdate" class="form-label">Exam Date:</label>
+                    <input type="date" name="examdate" class="form-control" id="examdate" placeholder="Enter Exam Date" required>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <?php
+                  if(isset($res) && $res > 1){
+                    ?>
+                    <button type="submit" name="retake" class="btn btn-primary">Retake</button>
+                    <?php
+                  }else{
+                    ?>
+                    <button type="submit" name="register_exam" class="btn btn-success">Register</button>
+                    <?php
+                  }
+                  ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+        // Use jQuery to trigger the modal when the page is ready
+            $(document).ready(function(){
+                $('#examAnn<?=$examrow['post_id']?>').modal('show');
+            });
+        </script>
+        <?php
+      }else{
+        if(isset($_SESSION['post_id'])){
+          unset($_SESSION['post_id']);
+        }
+      }
+    }
+  ?>
   <!-- modal if dont have an pruaccount -->
   <?php
     if($row['has_pruaccount']==0){
@@ -1378,7 +1680,6 @@ $userFolder = 'documents/' . $foldername . '/';
       <?php
     }
   ?>
-
 
   <!--JQuery-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -1432,6 +1733,27 @@ $userFolder = 'documents/' . $foldername . '/';
         $('#myModal').modal('show');
     });
 </script>
+<script>
+    $(document).ready(function () {
+        // Initially hide the date and place containers
+        $('#examPlaceContainer').hide();
+        $('#examDateContainer').hide();
 
+        // Add change event listener to the radio buttons
+        $('input[name="examtype"]').change(function () {
+            // Check the value of the selected radio button
+            var selectedValue = $('input[name="examtype"]:checked').val();
+
+            // Toggle the visibility of date and place containers based on the selected value
+            if (selectedValue === 'offsite') {
+                $('#examPlaceContainer').show();
+                $('#examDateContainer').show();
+            } else {
+                $('#examPlaceContainer').hide();
+                $('#examDateContainer').show(); // If online, show only the date input
+            }
+        });
+    });
+</script>
 </body>
 </html>

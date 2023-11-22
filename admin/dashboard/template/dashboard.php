@@ -196,6 +196,18 @@ if(isset($_POST['mass_send'])){
     .current-item .progress-count {
         color: #21d4fd;
     }
+    .badge-rop{
+        background-color: #EDFF00;
+    }
+    .badge-ice{
+        background-color: #1A99F8;
+    }
+    .badge-clr{
+        background-color: #2EEAB2;
+    }
+    .badge-new{
+        background-color: #db51a2;
+    }
 </style>
 
 <body>
@@ -208,10 +220,6 @@ if(isset($_POST['mass_send'])){
                 <a class="navbar-brand brand-logo-mini"><img src="images/logajade.png" alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-                <button class="navbar-toggler navbar-toggler align-self-center" style="border-width: 0ch;" type="button"
-                    data-toggle="minimize">
-                    <span class="icon-menu"></span>
-                </button>
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
@@ -233,8 +241,17 @@ if(isset($_POST['mass_send'])){
             </div>
         </nav>
         <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-
+        <div class="container-fluid page-body-wrapper sidebar-fixed">
+            <?php
+            $alert = 0;
+            $alertsql = "SELECT * FROM documents";
+            $alertresult = mysqli_query($conn, $alertsql);
+            while($alertrow = mysqli_fetch_array($alertresult)){
+                if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)||(!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)||(!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)||(!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
+                    $alert = 1;
+                }
+            }
+            ?>
             <!-- partial -->
             <!-- partial:partials/_sidebar.html -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
@@ -248,14 +265,14 @@ if(isset($_POST['mass_send'])){
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                             <i class="fa-solid fa-user-tie fa-lg menu-icon"></i>
-                            <span class="menu-title">Applicant Data</span>
+                            <span class="menu-title mr-1">Applicant Data</span><?php echo $alert == 1? '<span class="badge badge-danger">!</span>' : ''?>
                             <i class="menu-arrow"></i>
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="pages/applicant_list.php">Applicant List</a></li>
                             <li class="nav-item"> <a class="nav-link" href="pages/applicant.php">Status Progress Bar</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="pages/applicant_docs.php">Documents</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="pages/applicant_docs.php">Documents <?php echo $alert == 1? '<span class="badge badge-danger">!</span>' : ''?></a></li>
                             </ul>
                         </div>
                         </li>
@@ -285,6 +302,12 @@ if(isset($_POST['mass_send'])){
                             <li class="nav-item"> <a class="nav-link" href="pages/prulife_accounts.php">PruLife UK</a></li>
                         </ul>
                         </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/exam.php">
+                            <i class="fa-solid fa-file-lines menu-icon"></i>
+                            <span class="menu-title">Exam Schedules</span>
+                        </a>
                     </li>
                 </ul>
             </nav>
@@ -331,7 +354,7 @@ if(isset($_POST['mass_send'])){
                                                     <div class="col-lg-2 p-3 text-center border-end border-2">
                                                         <h5>Total Temporary Agents</h5>
                                                         <?php
-                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' OR applicant_status = 'ICE' OR applicant_status = 'CLR'";
                                                         $totalresult = mysqli_query($conn, $totalsql);
                                                         $totalrow = mysqli_num_rows($totalresult);
                                                         ?>
@@ -341,6 +364,37 @@ if(isset($_POST['mass_send'])){
                                                         <h5>Total Licensed Agents</h5>
                                                         <?php
                                                         $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card border border-success border-3 rounded-4 mb-4">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-lg-4 p-3 text-center border-end border-2">
+                                                        <h5>ROP</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-4 p-3 text-center border-end border-2">
+                                                        <h5>ICE</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'ICE'";
+                                                        $totalresult = mysqli_query($conn, $totalsql);
+                                                        $totalrow = mysqli_num_rows($totalresult);
+                                                        ?>
+                                                        <h1><?=$totalrow?></h1>
+                                                    </div>
+                                                    <div class="col-lg-4 p-3 text-center">
+                                                        <h5>CLR</h5>
+                                                        <?php
+                                                        $totalsql = "SELECT * FROM applicantdb WHERE applicant_status = 'CLR'";
                                                         $totalresult = mysqli_query($conn, $totalsql);
                                                         $totalrow = mysqli_num_rows($totalresult);
                                                         ?>
@@ -358,6 +412,9 @@ if(isset($_POST['mass_send'])){
                                                         <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
                                                         <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
                                                         <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                                                        <li><button type="submit" name="rop" class="dropdown-item" href="#">Temporary Agent (ROP)</button></li>
+                                                        <li><button type="submit" name="ice" class="dropdown-item" href="#">Temporary Agent (ICE)</button></li>
+                                                        <li><button type="submit" name="clr" class="dropdown-item" href="#">Temporary Agent (CLR)</button></li>
                                                         <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
                                                     </ul>
                                                     <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#massemail"><i class="fa-solid fa-envelope"></i>Mass Email</button>
@@ -378,18 +435,24 @@ if(isset($_POST['mass_send'])){
                                                     if(isset($_POST['search'])){
                                                         $searchitem = $_POST['itemsearch'];
                                                         if(!empty($searchitem)){
-                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%' ORDER BY lastname ASC, firstname ASC";
                                                         }else{
-                                                            $sql = "SELECT * FROM applicantdb";
+                                                            $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                                                         }
                                                     }elseif(isset($_POST['newapp'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant' ORDER BY lastname ASC, firstname ASC";
                                                     }elseif(isset($_POST['tempagent'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' OR applicant_status = 'ICE' OR applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['rop'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['ice'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ICE' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['clr'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
                                                     }elseif(isset($_POST['licagent'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent' ORDER BY lastname ASC, firstname ASC";
                                                     }else{
-                                                        $sql = "SELECT * FROM applicantdb";
+                                                        $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                                                     }
                                                     
                                                     $result = mysqli_query($conn, $sql);
@@ -421,39 +484,23 @@ if(isset($_POST['mass_send'])){
                                                                 $step5 = '';
                                                                 $completion = $row['is_completed'] + $row['confirmed_rop'] + $row['confirmed_documents'] + $row['confirmed_elicense'];
 
-                                                                switch($completion){
-                                                                case 1:
-                                                                    $step2 = 'current-item';
-                                                                    break;
-                                                                case 2:
-                                                                    $step3 = 'current-item';
-                                                                    break;
-                                                                case 3:
-                                                                    $step4 = 'current-item';
-                                                                    break;
-                                                                case 4:
-                                                                    $step5 = 'Completed';
-                                                                    break;
-                                                                default:
-                                                                    $step1 = 'current-item';
-                                                                    break;
-                                                                } 
-
                                                                 if($completion == 0){
                                                                     $statusClass = 'badge badge-pill badge-danger';
                                                                     $status = 'New Applicant';
                                                                 }elseif($completion >= 1 && $completion <= 3){
                                                                     $statusClass = 'badge badge-pill badge-warning';
-                                                                    if($row['confirmed_elicense'] == 1){
-                                                                        $status = 'Temporary Agent (CLR)';                                            
-                                                                    }elseif($row['confirmed_documents'] == 1){
-                                                                        $status = 'Temporary Agent (ICE)';                                            
-                                                                    }elseif($row['confirmed_rop'] == 1){
-                                                                        $status = 'Temporary Agent (ROP)';                                            
-                                                                    }
+                                                                    $status = 'Temporary Agent';                                            
                                                                 }elseif($completion == 4){
                                                                     $statusClass = 'badge badge-pill badge-success';
                                                                     $status = 'Licensed Agent';
+                                                                }
+
+                                                                if($row['applicant_status'] == 'ROP'){
+                                                                    $apstat = 'badge badge-pill badge-rop';
+                                                                }elseif($row['applicant_status'] == 'ICE'){
+                                                                    $apstat = 'badge badge-pill badge-ice';
+                                                                }elseif($row['applicant_status'] == 'CLR'){
+                                                                    $apstat = 'badge badge-pill badge-clr';
                                                                 }
 
                                                                 //when is empty
@@ -501,7 +548,20 @@ if(isset($_POST['mass_send'])){
                                                                 <div class="col-lg-2 mt-5">
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Status:</p>
                                                                     <div class="d-flex">
-                                                                        <p style="font-size: 12px;" class="<?= $statusClass?> pt-2"><?= $status?></p>
+                                                                        <div class="text-center">
+                                                                            <p style="font-size: 12px;" class="<?= $statusClass?> mb-0"><?= $status?></p>
+                                                                            <?php
+                                                                            if($completion >= 1 && $completion <= 3){
+                                                                                ?>
+                                                                                <p style="font-size: 12px;" class="<?= $apstat?> m-0"><?=$row['applicant_status']?></p>
+                                                                                <?php
+                                                                            }elseif($row['Timestamp'] == $c){
+                                                                                ?>
+                                                                                <p style="font-size: 12px;" class="badge badge-pill badge-new m-0">New</p>
+                                                                                <?php
+                                                                            }
+                                                                            ?>
+                                                                        </div>
                                                                         <p><button class="btn btn-info btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modal<?php echo $row['application_id'] ?>"><i class="fa-solid fa-question"></i></button></p>
                                                                         
                                                                     </div>
@@ -518,7 +578,7 @@ if(isset($_POST['mass_send'])){
                                                                         </div>
                                                                         <div class="modal-body">
                                                                             <div class="container p-3 mt-2">
-                                                                                <div class="row p-3 justify-content-around">
+                                                                                <div class="row p-3 justify-content-around bg-light shadow rounded border border-success mb-2">
                                                                                     <div class="col-lg-12 text-center">
                                                                                         <h4 class="bg-success rounded text-white"><?= ($completion == 4) ? 'Completed' : '' ?></h4>
                                                                                         <section class="step-wizard">
@@ -714,6 +774,7 @@ if(isset($_POST['mass_send'])){
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>

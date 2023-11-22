@@ -23,7 +23,13 @@ if(isset($_POST['completed'])){
     if($completion == 0){
         $rstatus = 'New Applicant';
     }elseif($completion >= 1 && $completion <= 3){
-        $rstatus = 'Temporary Agent';                                            
+        if($row['confirmed_elicense'] == 1){
+            $rstatus = 'CLR';                                            
+        }elseif($row['confirmed_documents'] == 1){
+            $rstatus = 'ICE';                                            
+        }elseif($row['confirmed_rop'] == 1){
+            $rstatus = 'ROP';                                            
+        }
     }elseif($completion == 4){
         $rstatus = 'Licensed Agent';
     }
@@ -58,7 +64,13 @@ if(isset($_POST['confirm_rop'])){
     if($completion == 0){
         $rstatus = 'New Applicant';
     }elseif($completion >= 1 && $completion <= 3){
-        $rstatus = 'Temporary Agent';                                            
+        if($row['confirmed_elicense'] == 1){
+            $rstatus = 'CLR';                                            
+        }elseif($row['confirmed_documents'] == 1){
+            $rstatus = 'ICE';                                            
+        }elseif($row['confirmed_rop'] == 1){
+            $rstatus = 'ROP';                                            
+        }
     }elseif($completion == 4){
         $rstatus = 'Licensed Agent';
     }
@@ -95,7 +107,13 @@ if(isset($_POST['confirm_docu'])){
     if($completion == 0){
         $rstatus = 'New Applicant';
     }elseif($completion >= 1 && $completion <= 3){
-        $rstatus = 'Temporary Agent';                                            
+        if($row['confirmed_elicense'] == 1){
+            $rstatus = 'CLR';                                            
+        }elseif($row['confirmed_documents'] == 1){
+            $rstatus = 'ICE';                                            
+        }elseif($row['confirmed_rop'] == 1){
+            $rstatus = 'ROP';                                            
+        }
     }elseif($completion == 4){
         $rstatus = 'Licensed Agent';
     }
@@ -130,7 +148,13 @@ if(isset($_POST['confirm_elicense'])){
     if($completion == 0){
         $rstatus = 'New Applicant';
     }elseif($completion >= 1 && $completion <= 3){
-        $rstatus = 'Temporary Agent';                                            
+        if($row['confirmed_elicense'] == 1){
+            $rstatus = 'CLR';                                            
+        }elseif($row['confirmed_documents'] == 1){
+            $rstatus = 'ICE';                                            
+        }elseif($row['confirmed_rop'] == 1){
+            $rstatus = 'ROP';                                            
+        }
     }elseif($completion == 4){
         $rstatus = 'Licensed Agent';
     }
@@ -286,12 +310,21 @@ if(isset($_POST['confirm_elicense'])){
     .current-item .progress-count {
         color: #21d4fd;
     }
+    .badge-rop{
+        background-color: #EDFF00;
+    }
+    .badge-ice{
+        background-color: #1A99F8;
+    }
+    .badge-clr{
+        background-color: #2EEAB2;
+    }
 </style>
 
 <body>
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
-        <?php include('nav.html'); ?>
+        <?php include('nav.php'); ?>
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
@@ -310,6 +343,9 @@ if(isset($_POST['confirm_elicense'])){
                                             <li><button type="submit" name="all" class="dropdown-item" href="#">All</button></li>
                                             <li><button type="submit" name="newapp" class="dropdown-item" href="#">New Applicant</button></li>
                                             <li><button type="submit" name="tempagent" class="dropdown-item" href="#">Temporary Agent</button></li>
+                                            <li><button type="submit" name="rop" class="dropdown-item" href="#">Temporary Agent (ROP)</button></li>
+                                            <li><button type="submit" name="ice" class="dropdown-item" href="#">Temporary Agent (ICE)</button></li>
+                                            <li><button type="submit" name="clr" class="dropdown-item" href="#">Temporary Agent (CLR)</button></li>
                                             <li><button type="submit" name="licagent" class="dropdown-item" href="#">Licensed Agent</button></li>
                                         </ul>
                                     </form>
@@ -331,18 +367,24 @@ if(isset($_POST['confirm_elicense'])){
                                                     if(isset($_POST['search'])){
                                                         $searchitem = $_POST['itemsearch'];
                                                         if(!empty($searchitem)){
-                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%'";
+                                                            $sql = "SELECT * FROM applicantdb WHERE lastname LIKE '$searchitem' OR firstname LIKE '%$searchitem%' ORDER BY lastname ASC, firstname ASC";
                                                         }else{
-                                                            $sql = "SELECT * FROM applicantdb";
+                                                            $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                                                         }
                                                     }elseif(isset($_POST['newapp'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'New Applicant' ORDER BY lastname ASC, firstname ASC";
                                                     }elseif(isset($_POST['tempagent'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Temporary Agent'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' OR applicant_status = 'ICE' OR applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['rop'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ROP' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['ice'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'ICE' ORDER BY lastname ASC, firstname ASC";
+                                                    }elseif(isset($_POST['clr'])){
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'CLR' ORDER BY lastname ASC, firstname ASC";
                                                     }elseif(isset($_POST['licagent'])){
-                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
+                                                        $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent' ORDER BY lastname ASC, firstname ASC";
                                                     }else{
-                                                        $sql = "SELECT * FROM applicantdb";
+                                                        $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                                                     }
                                                     $result = mysqli_query($conn, $sql);
                                                         if (!mysqli_num_rows($result) > 0) {
@@ -366,25 +408,35 @@ if(isset($_POST['confirm_elicense'])){
                                                                     $status = 'New Applicant';
                                                                 }elseif($completion >= 1 && $completion <= 3){
                                                                     $statusClass = 'badge badge-pill badge-warning';
-                                                                    if($row['confirmed_elicense'] == 1){
-                                                                        $status = 'Temporary Agent (CLR)';                                            
-                                                                    }elseif($row['confirmed_documents'] == 1){
-                                                                        $status = 'Temporary Agent (ICE)';                                            
-                                                                    }elseif($row['confirmed_rop'] == 1){
-                                                                        $status = 'Temporary Agent (ROP)';                                            
-                                                                    }
+                                                                    $status = 'Temporary Agent';                                            
                                                                 }elseif($completion == 4){
                                                                     $statusClass = 'badge badge-pill badge-success';
                                                                     $status = 'Licensed Agent';
                                                                 }
+
+                                                                if($row['applicant_status'] == 'ROP'){
+                                                                    $apstat = 'badge badge-pill badge-rop';
+                                                                }elseif($row['applicant_status'] == 'ICE'){
+                                                                    $apstat = 'badge badge-pill badge-ice';
+                                                                }elseif($row['applicant_status'] == 'CLR'){
+                                                                    $apstat = 'badge badge-pill badge-clr';
+                                                                }
+
                                                         ?>
                                                             <div class="row justify-content-center border-bottom border-secondary">
                                                                 <div class="row justify-content-left col-lg-2 mb-3 mr-0 pt-3">
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Name:</p>
                                                                     <p style="font-size: 15px;" class="text-dark"><strong><?php echo $fullname ?></strong></p>
                                                                     <p style="font-size: 15px;" class="text-secondary mb-0">Status:</p>
-                                                                    <div>
-                                                                        <p style="font-size: 12px;" class="<?= $statusClass?>"><?= $status?></p>
+                                                                    <div class="text-center">
+                                                                        <p style="font-size: 12px;" class="<?= $statusClass?> mb-0"><?=$status?></p>
+                                                                        <?php
+                                                                        if($completion >= 1 && $completion <= 3){
+                                                                            ?>
+                                                                            <p style="font-size: 12px;" class="<?= $apstat?> m-0"><?=$row['applicant_status']?></p>
+                                                                            <?php
+                                                                        }
+                                                                        ?>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-lg-10">
@@ -427,9 +479,15 @@ if(isset($_POST['confirm_elicense'])){
                                                                                     <button type="submit" name="confirm_rop" class="btn btn-success btn-sm me-"><i class="fa-solid fa-check-to-slot"></i> Confirm</button>
                                                                                     <?php
                                                                                 }else{
-                                                                                    ?>
-                                                                                    <button type="submit" name="confirm_rop" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
-                                                                                    <?php
+                                                                                    if($row['confirmed_documents'] == 1){
+                                                                                        ?>
+                                                                                        <button class="btn btn-danger btn-sm me-" disabled><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="confirm_rop" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }
                                                                                 }
                                                                                 ?>
                                                                                 <h6>ROP Training</h6>
@@ -447,9 +505,15 @@ if(isset($_POST['confirm_elicense'])){
                                                                                         <?php
                                                                                     }
                                                                                 }else{
-                                                                                    ?>
-                                                                                    <button type="submit" name="confirm_docu" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
-                                                                                    <?php
+                                                                                    if($row['confirmed_elicense'] == 1){
+                                                                                        ?>
+                                                                                        <button class="btn btn-danger btn-sm me-" disabled><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="confirm_docu" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }
                                                                                 }
                                                                                 ?>
                                                                                 <h6>ICE</h6>
@@ -467,9 +531,15 @@ if(isset($_POST['confirm_elicense'])){
                                                                                         <?php
                                                                                     }
                                                                                 }else{
-                                                                                    ?>
-                                                                                    <button type="submit" name="confirm_elicense" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
-                                                                                    <?php
+                                                                                    if($row['is_completed'] == 1){
+                                                                                        ?>
+                                                                                        <button class="btn btn-danger btn-sm me-" disabled><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }else{
+                                                                                        ?>
+                                                                                        <button type="submit" name="confirm_elicense" class="btn btn-danger btn-sm me-"><i class="fa-solid fa-square-xmark"></i> </button>
+                                                                                        <?php
+                                                                                    }
                                                                                 }
                                                                                 ?>
                                                                                 <h6>E-Licensing</h6>

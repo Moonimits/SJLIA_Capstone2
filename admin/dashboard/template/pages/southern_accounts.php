@@ -34,7 +34,7 @@ $result = mysqli_query($conn, $sql);
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <?php include('nav.html')?>
+    <?php include('nav.php')?>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -84,7 +84,7 @@ $result = mysqli_query($conn, $sql);
                             }elseif(isset($_POST['licagent'])){
                                 $sql = "SELECT * FROM applicantdb WHERE applicant_status = 'Licensed Agent'";
                             }else{
-                                $sql = "SELECT * FROM applicantdb";
+                                $sql = "SELECT * FROM applicantdb ORDER BY lastname ASC, firstname ASC";
                             }
                             $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){

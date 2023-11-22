@@ -87,7 +87,7 @@ if(isset($_POST['mass_send'])){
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-      <?php include('nav.html') ?>
+      <?php include('nav.php') ?>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -148,11 +148,11 @@ if(isset($_POST['mass_send'])){
                                 $_SESSION['date'] = $searchdate;
                                 $sql = "SELECT * FROM bybpreregistration WHERE byb_date = '$searchdate'";
                               }else{
-                                $sql = "SELECT * FROM bybpreregistration";
+                                $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
                                 unset($_SESSION['date']);
                               }
                             }else{
-                              $sql = "SELECT * FROM bybpreregistration";
+                              $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
                             }
                             $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){

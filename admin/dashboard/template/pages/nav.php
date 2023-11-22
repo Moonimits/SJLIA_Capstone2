@@ -4,9 +4,6 @@
       <a class="navbar-brand brand-logo-mini" ><img src="../images/logajade.png" alt="logo"/></a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-      <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-        <span class="icon-menu"></span>
-      </button>
       <ul class="navbar-nav navbar-nav-right">
         <li class="nav-item nav-profile dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
@@ -26,8 +23,17 @@
     </div>
   </nav>
   <!-- partial -->
-  <div class="container-fluid page-body-wrapper">
-
+  <div class="container-fluid page-body-wrapper sidebar-fixed">
+    <?php
+    $alert = 0;
+    $alertsql = "SELECT * FROM documents";
+    $alertresult = mysqli_query($conn, $alertsql);
+    while($alertrow = mysqli_fetch_array($alertresult)){
+        if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)||(!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)||(!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)||(!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
+            $alert = 1;
+        }
+    }
+    ?>
     <!-- partial -->
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
@@ -41,14 +47,14 @@
         <li class="nav-item">
           <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
             <i class="fa-solid fa-user-tie fa-lg menu-icon"></i>
-            <span class="menu-title">Applicant Data</span>
+            <span class="menu-title mr-1">Applicant Data</span><?php echo $alert == 1? '<span class="badge badge-danger">!</span>' : ''?>
             <i class="menu-arrow"></i>
           </a>
           <div class="collapse" id="ui-basic">
             <ul class="nav flex-column sub-menu">
               <li class="nav-item"> <a class="nav-link" href="applicant_list.php">Applicant List</a></li>
               <li class="nav-item"> <a class="nav-link" href="applicant.php">Status Progress Bar</a></li>
-              <li class="nav-item"> <a class="nav-link" href="applicant_docs.php">Documents</a></li>
+              <li class="nav-item"> <a class="nav-link" href="applicant_docs.php">Documents <?php echo $alert == 1? '<span class="badge badge-danger">!</span>' : ''?></a></li>
             </ul>
           </div>
         </li>
@@ -79,5 +85,11 @@
           </ul>
         </div>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="exam.php">
+            <i class="fa-solid fa-file-lines menu-icon"></i>
+            <span class="menu-title">Exam Schedules</span>
+        </a>
+    </li>
         </ul>
     </nav>
