@@ -2,6 +2,10 @@
 session_start();
 include("../dbcon.php");
 
+if(!isset($_SESSION['verified'])){
+  header('Location: ../verifyemail.php');
+}
+
 $error='';
 $crslerror = '';
 
@@ -208,6 +212,8 @@ $crslerror = '';
                 $docusql = "INSERT INTO documents (application_id,sss,tin,gov_id,1x1) VALUES ('$appid','','','','')";
                 $docresult = mysqli_query($conn, $docusql);
                 
+                unset($_SESSION['verified']);
+
                 if($result){
                   ?>
                   <link rel="stylesheet" href="popup_style.css">

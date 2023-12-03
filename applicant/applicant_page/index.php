@@ -727,6 +727,24 @@ if(isset($_POST['register_exam'])){
   }
 
 }
+if(isset($_POST['feedback'])){
+  $name = filter_input(INPUT_POST, "fullname", FILTER_SANITIZE_SPECIAL_CHARS);
+  $message = filter_input(INPUT_POST, "message", FILTER_SANITIZE_SPECIAL_CHARS);
+
+  $sql = "INSERT INTO feedback(name, message) VALUES (?,?)";
+  $stmt = mysqli_prepare($conn, $sql);
+  mysqli_stmt_bind_param($stmt, 'ss', $name, $message);
+  $result = mysqli_stmt_execute($stmt);
+
+  if($result){
+    $uploadsuccess = '
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      Feedback Successfully Sent!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>';
+  }
+
+}
 
 $sql = "SELECT * FROM applicantdb WHERE application_id = '$app_id'";
 $result = mysqli_query($conn, $sql);
@@ -968,6 +986,7 @@ $userFolder = 'documents/' . $foldername . '/';
                     <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                     <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#pruaccount">Prulife Account</button></li>
                     <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changepassword">Change Password</button></li>
+                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#feedback">Feedback</button></li>
                   </ul>
                 </div>
               </div>
@@ -1459,6 +1478,35 @@ $userFolder = 'documents/' . $foldername . '/';
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" name="changepass" class="btn btn-success">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- feedback -->
+      <form method="post">
+        <div class="modal fade" tabindex="-1" id="feedback">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Give Us a Feedback</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-12">
+                    <input type="text" name="fullname" value="<?= $fullname?>" style="display: none;">
+                    <div class="form-group">
+                      <label>Feedback</label>
+                      <textarea class="form-control" name="message" placeholder="Leave a comment here" rows="10"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" name="feedback" class="btn btn-success">Submit</button>
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("dbcon.php");
+include("admin/dashboard/template/pages/email.php");
 
 $error = '';
 if(isset($_POST['submit'])){
@@ -9,12 +10,15 @@ if(isset($_POST['submit'])){
     $contact = filter_input(INPUT_POST, "contact", FILTER_SANITIZE_SPECIAL_CHARS);
     $recruite = filter_input(INPUT_POST, "recruite", FILTER_SANITIZE_SPECIAL_CHARS);
     $bybdate = filter_input(INPUT_POST, "bybdate", FILTER_SANITIZE_SPECIAL_CHARS);
+    $msg = 'You are now Pre-Registered on the BYB-Event coming up on the date of '.$bybdate.'. Thank You For Pre-Registering!';
+
+    bybpreregister($email,$msg);
     
     $sql = "INSERT INTO bybpreregistration(fullname,email,contact,recruited_by,byb_date) VALUES (?,?,?,?,?)";
     $stmt = mysqli_prepare($conn,$sql);
     mysqli_stmt_bind_param($stmt, 'sssss', $fullname,$email,$contact,$recruite,$bybdate);
     $result = mysqli_stmt_execute($stmt);
-
+    
     if($result){
         ?>
         <link rel="stylesheet" href="registration/popup_style.css">

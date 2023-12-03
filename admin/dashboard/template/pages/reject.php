@@ -112,7 +112,7 @@ if($id == 1){
         </div>
         <?php
     }
-}elseif($id == 4){
+}elseif($id == 5){
   $sql = "UPDATE documents SET rop_cert = '$empty' WHERE application_id = '$appid'";
   $result = mysqli_query($conn, $sql);
 

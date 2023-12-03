@@ -258,7 +258,7 @@ if(isset($_POST['add_photo'])){
                                                             </div>
                                                             <div class="col-lg-12">
                                                                 <label for="">Exam Name:</label>
-                                                                <input type="text" name="name" class="form-control" required>
+                                                                <input type="text" name="name" class="form-control" value="Traditional&Variable" readonly>
                                                             </div>
                                                         </div>
                                                     </div>

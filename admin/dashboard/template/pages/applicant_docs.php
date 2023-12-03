@@ -86,18 +86,19 @@ $result = mysqli_query($conn, $sql);
                           $alertresult = mysqli_query($conn, $alertsql);
                           while($alertrow = mysqli_fetch_array($alertresult)){
                               if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)){
-                                $count =+ 1;
+                                $count = $count + 1;
                               }
                               if((!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)){
-                                $count =+ 1;
+                                $count = $count + 1;
                               }
                               if((!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)){
-                                $count =+ 1;
+                                $count = $count + 1;
                               }
                               if((!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
-                                $count =+ 1;
-                              }if((!empty($alertrow['rop_cert']) && $row['confirmed_rop'] == 0)){
-                                $count =+ 1;
+                                $count = $count + 1;
+                              }
+                              if((!empty($alertrow['rop_cert']) && $row['confirmed_rop'] == 0)){
+                                $count = $count + 1;
                               }
                           }
                           ?>
@@ -133,7 +134,7 @@ $result = mysqli_query($conn, $sql);
                                       }else{
                                         while($docrow = mysqli_fetch_assoc($docresult)){
                                           $userFolder = $row['Lastname'] . ', ' . $row['Firstname'] . '/';
-                                          if(!empty($docrow['sss'])||!empty($docrow['tin'])||!empty($docrow['gov_id'])||!empty($docrow['1x1'])){
+                                          if(!empty($docrow['sss'])||!empty($docrow['tin'])||!empty($docrow['gov_id'])||!empty($docrow['1x1'])||!empty($docrow['rop_cert'])){
                                             if(!empty($docrow['sss'])){
                                               ?>
                                               <div class="col-lg-4">

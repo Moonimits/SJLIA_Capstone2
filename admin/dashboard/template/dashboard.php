@@ -253,7 +253,10 @@ if(isset($_POST['mass_send'])){
             $alertsql = "SELECT * FROM documents";
             $alertresult = mysqli_query($conn, $alertsql);
             while($alertrow = mysqli_fetch_array($alertresult)){
-                if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)||(!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)||(!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)||(!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)){
+              $ropsql = "SELECT * FROM applicantdb WHERE application_id = '".$alertrow['application_id']."'";
+              $ropresult = mysqli_query($conn, $ropsql);
+              $roprow = mysqli_fetch_array($ropresult);
+                if((!empty($alertrow['sss']) && $alertrow['confirm_sss'] == 0)||(!empty($alertrow['tin']) && $alertrow['confirm_tin'] == 0)||(!empty($alertrow['gov']) && $alertrow['confirm_gov'] == 0)||(!empty($alertrow['1x1']) && $alertrow['confirm_1x1'] == 0)||(!empty($alertrow['rop_cert']) && $roprow['confirmed_rop'] == 0)){
                     $alert = 1;
                 }
             }
@@ -313,6 +316,12 @@ if(isset($_POST['mass_send'])){
                         <a class="nav-link" href="pages/exam.php">
                             <i class="fa-solid fa-file-lines menu-icon"></i>
                             <span class="menu-title">Exam Schedules</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/feedback.php">
+                            <i class="fa-solid fa-comment-dots menu-icon"></i>
+                            <span class="menu-title">Feedback</span>
                         </a>
                     </li>
                 </ul>

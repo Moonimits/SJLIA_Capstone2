@@ -4,56 +4,13 @@ include('../../../../dbcon.php');
 include('email.php');
 $success = '';
 
-if(isset($_POST['edit']))
-{
-  $edit_title = filter_input(INPUT_POST, "edit_title", FILTER_SANITIZE_SPECIAL_CHARS);
-  $edit_date = filter_input(INPUT_POST, "edit_date", FILTER_SANITIZE_SPECIAL_CHARS); 
-  $edit_id = $_POST['edit_id'];
-
-  $editsql = 'UPDATE bybevents SET byb_title = ?, byb_date = ? WHERE byb_id = ?' ;
-  $stmt = mysqli_prepare($conn, $editsql);
-  mysqli_stmt_bind_param($stmt, 'ssi' , $edit_title,$edit_date,$edit_id);
-  $editsql = mysqli_stmt_execute($stmt);
-
-  if($editsql){
+if(isset($_GET['delmsg'])){
     $success = '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                  Edit BYB Event Successfully!
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>';
-  }
-}
-
-if(isset($_POST['mass_send'])){
-  $message = filter_input(INPUT_POST, "message", FILTER_SANITIZE_SPECIAL_CHARS);
-  $recipientdate = filter_input(INPUT_POST, "recipientdate", FILTER_SANITIZE_SPECIAL_CHARS);
-  
-  $massemail = "SELECT * FROM bybpreregistration WHERE byb_date = '$recipientdate'";
-  $massresult = mysqli_query($conn,$massemail);
-  if(mysqli_num_rows($massresult)>0){
-      while($massrow = mysqli_fetch_assoc($massresult)){
-          $email = $massrow['email'];
-
-          sendManualEmail($email,$message);
-      }
-  }else{
-      ?>
-      <link rel="stylesheet" href="../../../registration/popup_style.css">
-      <div class="popup popup--icon -error js_error-popup popup--visible">
-      <div class="popup__background"></div>
-      <div class="popup__content">
-          <h3 class="popup__content__title">
-          Message not Sent
-          </h3>
-          <p>There are no recipients to be sent</p>
-          <p>
-          <a href='byb.php'><button class="button button--error" data-for="js_error-popup">OK</button></a>
-          </p>
-      </div>
-      </div>
-      <?php
-  }
+    '.$_GET['delmsg'].'
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>';
 }
 
 ?>
@@ -82,6 +39,15 @@ if(isset($_POST['mass_send'])){
   <link rel="shortcut icon" href="../../../Pictures/loghousetitle.jpg" />
   <script src="https://kit.fontawesome.com/866d550866.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../bootstrap-5.3.2-dist/css/bootstrap.min.css">
+
+  <style>
+    .max-width-cell {
+  max-width: 200px; 
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+  </style>
 </head>
 
 <body>
@@ -97,13 +63,10 @@ if(isset($_POST['mass_send'])){
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <p class="card-title">BYB Pre-Register Table</p>
+                  <p class="card-title">Applicant Feedback</p>
                   <div class="row">
                     <div class="col">
-                      <div class="d-flex">
-                        <a href="email_attendees.php" class="btn btn-primary me-3"><i class="fa-solid fa-envelope"></i> Mass Email</a>
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#manual"><i class="fa-solid fa-envelope"></i> Manual Mass Email</button>
-                      </div>
+                    <?=$success?>
                     </div>
                     <div class="col-lg-7">
                       <form class="d-flex" method="post">
@@ -171,10 +134,9 @@ if(isset($_POST['mass_send'])){
                             <tr>
                               <th style="font-size: 16px">#</th>
                               <th style="font-size: 16px">Fullname</th>
-                              <th style="font-size: 16px">Email</th>
-                              <th style="font-size: 16px">Contact</th>
-                              <th style="font-size: 16px">Recruited By</th>
-                              <th style="font-size: 16px">BYB Event Date</th>
+                              <th style="font-size: 16px">Message</th>
+                              <th style="font-size: 16px">Date Sent</th>
+                              <th style="font-size: 16px">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -183,9 +145,9 @@ if(isset($_POST['mass_send'])){
                               if(!empty($_POST['day'])&&!empty($_POST['month'])&&!empty($_POST['year'])){
                                 $searchdate = $_POST['year'] . '-' . $_POST['month'] . '-' . $_POST['day'];
                                 $_SESSION['date'] = $searchdate;
-                                $sql = "SELECT * FROM bybpreregistration WHERE byb_date = '$searchdate'";
+                                $sql = "SELECT * FROM feedback WHERE date = '$searchdate' ORDER BY feedback_id DESC";
                               }else{
-                                $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
+                                $sql = "SELECT * FROM feedback WHERE date = (SELECT MAX(date) FROM feedback) ORDER BY feedback_id DESC";
                                 unset($_SESSION['date']);
                               }
                             }elseif(isset($_POST['searchmonth'])){
@@ -198,37 +160,39 @@ if(isset($_POST['mass_send'])){
                                   $year = date("Y");
                                 }
 
-                                $sql = "SELECT * FROM bybpreregistration WHERE MONTH(byb_date) = '$month' AND YEAR(byb_date) = '$year'";
+                                $sql = "SELECT * FROM feedback WHERE MONTH(date) = '$month' AND YEAR(date) = '$year' ORDER BY feedback_id DESC";
                               }else{
-                                $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
+                                $sql = "SELECT * FROM feedback WHERE date = (SELECT MAX(date) FROM feedback) ORDER BY feedback_id DESC";
                                 unset($_SESSION['date']);
                               }
                             }elseif(isset($_POST['searchyear'])){
                               if(!empty($_POST['year'])){
                                 $year = $_POST['year'];
-                                $sql = "SELECT * FROM bybpreregistration WHERE YEAR(byb_date) = '$year'";
+                                $sql = "SELECT * FROM feedback WHERE YEAR(date) = '$year' ORDER BY feedback_id DESC";
                               }else{
-                                $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
+                                $sql = "SELECT * FROM feedback WHERE date = (SELECT MAX(date) FROM feedback) ORDER BY feedback_id DESC";
                                 unset($_SESSION['date']);
                               }
                             }else{
-                              $sql = "SELECT * FROM bybpreregistration WHERE byb_date = (SELECT MAX(byb_date) FROM bybpreregistration)";
+                              $sql = "SELECT * FROM feedback WHERE date = (SELECT MAX(date) FROM feedback) ORDER BY feedback_id DESC";
                             }
                             $result = mysqli_query($conn, $sql);
                             if(!mysqli_num_rows($result)>0){
-                                echo '<td colspan="11"><center>No BYB record found</center></td>';
+                                echo '<td colspan="11"><center>No feedback record found</center></td>';
                             }else{
                                 $count = 1;
                                 while($row = mysqli_fetch_assoc($result)){
-                                  $dateInWords = date('F d Y', strtotime($row['byb_date']));
+                                  $dateInWords = date('F d Y', strtotime($row['date']));
                                   ?>
                                   <tr>
                                       <td><?= $count?></td>
-                                      <td><?= $row['fullname']?></td>
-                                      <td><?= $row['email']?></td>      
-                                      <td><?= $row['contact']?></td>  
-                                      <td><?= $row['recruited_by']?></td>  
-                                      <td><?= $dateInWords?></td>                                
+                                      <td><?= $row['name']?></td>
+                                      <td class="max-width-cell"><?= $row['message']?></td>       
+                                      <td><?= $dateInWords?></td>    
+                                      <td>
+                                        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#msg<?=$row['feedback_id']?>"><i class="fa-solid fa-eye"></i></button>
+                                        <a href="deletefeedback.php?delid=<?=$row['feedback_id']?>" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></a>
+                                      </td>                            
                                   </tr>
                                   <?php
                                   $count += 1;
@@ -246,51 +210,33 @@ if(isset($_POST['mass_send'])){
             </div>
         </div>
         
-        <!-- modal add byb title -->
-        <form method="post">
-          <div class="modal fade" id="manual" tabindex="-1" aria-labelledby="massemailLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                  <div class="modal-content">
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="massemailLabel">Mass Email</h5>
-                      <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                      <div class="row">
-                          <div class="col-lg-12">
-                              <label for="">Attendees on Date:</label>
-                              <form class="d-flex" method="post">
-                                <select type="date" class="form-control" name="recipientdate" required>
-                                  <option value="" disabled selected>BYB Date</option>
-                                  <?php
-                                  $sqldate = "SELECT DISTINCT byb_date FROM bybpreregistration";
-                                  $dateresult = mysqli_query($conn, $sqldate);
-                                  if($dateresult){
-                                    while($date = mysqli_fetch_assoc($dateresult)){
-                                      $options = date('F d Y', strtotime($date['byb_date']));
-                                      ?>
-                                      <option value="<?=$date['byb_date']?>"><?=$options?></option>
-                                      <?php
-                                    }
-                                  }
-                                  ?>
-                                </select>
-                              </form>
-                          </div>
-                          <div class="col-lg-12">
-                              <label for="exampleFormControlTextarea1" class="form-label">Message: </label>
-                              <textarea class="form-control" name="message" id="exampleFormControlTextarea1" rows="10" required></textarea>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="submit" name="mass_send" class="btn btn-primary">Send</button>
-                  </div>
-                  </div>
-              </div>
-          </div>
-      </form>
+        <?php
+        $msgsql = "SELECT * FROM feedback WHERE date = (SELECT MAX(date) FROM feedback)";
+        $msgresult = mysqli_query($conn, $msgsql);
+        while($msgrow = mysqli_fetch_assoc($msgresult)){
+            ?>
+            <div class="modal" tabindex="-1" role="dialog" id="msg<?=$msgrow['feedback_id']?>">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Feedback Message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="">Message:</label>
+                        <textarea class="form-control" rows="10" readonly><?=$msgrow['message']?></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
         <!-- modal end -->
 
         <!-- content-wrapper ends -->
